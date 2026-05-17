@@ -3,6 +3,8 @@
   flake.modules.homeManager.gui =
     { pkgs, ... }:
     {
+      # TODO: Adopt lua config instead of hyprlang
+      wayland.windowManager.hyprland.configType = "hyprlang";
       wayland.windowManager.hyprland.settings = {
         general = {
           gaps_in = 5;
