@@ -82,7 +82,7 @@
             {
               monitor = "";
 
-              text = ''cmd[update:3600000] echo "<span foreground='#c0caf5'>$(${pkgs.coreutils}/bin/date +"%a, %d. %b %Y")</span>"'';
+              text = ''cmd[update:3600000] echo "<span foreground='##c0caf5'>$(${pkgs.coreutils}/bin/date +"%a, %d. %b %Y")</span>"'';
               text_align = "center";
               font_size = 60;
               font_family = "";
