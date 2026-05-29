@@ -3,6 +3,6 @@
     { pkgs, ... }:
     {
       # Bluetooth not working in current kernels.
-      boot.kernelPackages = pkgs.linuxPackages_6_6;
+      boot.kernelPackages = pkgs.linuxPackages_latest;
     };
 }
