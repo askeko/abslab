@@ -58,6 +58,7 @@
           #memory,
           #disk,
           #network,
+          #custom-vpn,
           #custom-nix,
           #custom-music,
           #tray,
@@ -149,6 +150,15 @@
             color: @magenta;
           }
 
+          #custom-vpn.connected {
+            color: @green;
+          }
+
+          #custom-vpn.disconnected {
+            color: @red;
+            opacity: 0.5;
+          }
+
           #custom-nix {
             color: @orange;
             border-radius: 1rem 0px 0px 1rem;
@@ -221,6 +231,7 @@
               "wireplumber"
               "custom/backlight"
               "network"
+              "custom/vpn"
               "custom/battery"
               "clock"
               "tray"
@@ -292,6 +303,19 @@
               format-ethernet = "󰈀";
               tooltip-format = "󰈀 {ifname} via {gwaddr}";
               format-disconnected = "󰞃 Disconnected";
+            };
+
+            "custom/vpn" = {
+              return-type = "json";
+              interval = 5;
+              exec = ''
+                iface=$(${lib.getExe' pkgs.iproute2 "ip"} -j -d link show | ${lib.getExe pkgs.jq} -r '[.[] | select(.linkinfo.info_kind == "wireguard")] | .[0].ifname // empty')
+                if [ -n "$iface" ]; then
+                  echo "{\"text\":\"󰒃 $iface\", \"class\":\"connected\"}"
+                else
+                  echo "{\"text\":\"󰦝\", \"class\":\"disconnected\"}"
+                fi
+              '';
             };
 
             disk = {

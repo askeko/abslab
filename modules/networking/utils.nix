@@ -12,6 +12,7 @@
         socat
         # INFO: currently broken
         # wifite2
+        qbittorrent
       ];
     };
 }
