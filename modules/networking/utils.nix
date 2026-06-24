@@ -10,8 +10,7 @@
         gping
         inetutils
         socat
-        # INFO: currently broken
-        # wifite2
+        wifite2
         qbittorrent
       ];
     };
