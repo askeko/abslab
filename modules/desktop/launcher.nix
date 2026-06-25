@@ -1,7 +1,10 @@
 { lib, ... }:
 {
   flake.modules.homeManager.gui =
-    hmArgs@{ pkgs, ... }:
+    hmArgs@{ ... }:
+    let
+      mkLiteral = hmArgs.config.lib.formats.rasi.mkLiteral;
+    in
     {
       programs.rofi = {
         enable = true;
@@ -14,145 +17,56 @@
         extraConfig = {
           show-icons = true;
           drun-display-format = "{icon} {name}";
-          display-drun = "  Apps ";
-          display-run = "  Run ";
-          display-window = " 󰕰  Window";
-          display-Network = " 󰤨  Network";
+          display-drun = "󰍉  Apps";
+          display-run = "  Run";
+          display-window = "󰕰  Window";
         };
-        theme =
-          let
-            rofiTheme = pkgs.writeText "rofi-theme.rasi" ''
-              * {
-                background-color:                #1a1b26;
-                bordercolor:                     #7aa2f7;
-                foreground:                      #c0caf5;
-                cyan:                            #7dcfff;
-                green:                           #9ece6a;
-                purple:                          #bb9af7;
-                urgent-foreground:               #f7768e;
-                urgent-background:               #1a1b26;
-                active-foreground:               #1a1b26;
-                active-background:               #7aa2f7;
-                font: "FiraCode Nerd Font Mono 12";
-                selected-background:             @active-background;
-                selected-foreground:             @active-foreground;
-                selected-urgent-background:      @urgent-background;
-                selected-active-background:      @active-background;
-                separatorcolor:                  @active-background;
-              }
-
-              #window {
-                background-color: @background-color;
-                border: 3;
-                border-radius: 6;
-                border-color: @bordercolor;
-                padding: 15;
-              }
-              #mainbox {
-                border: 0;
-                padding: 0;
-              }
-              #message {
-                border: 0px;
-                border-color: @separatorcolor;
-                padding: 1px;
-              }
-              #textbox {
-                text-color: @foreground;
-              }
-              #listview {
-                fixed-height: 0;
-                border: 0px;
-                border-color: @bordercolor;
-                spacing: 2px;
-                scrollbar: false;
-                padding: 2px 0px 0px;
-              }
-              #element {
-                border: 0;
-                padding: 3px;
-              }
-              #element.normal.normal {
-                background-color: @background-color;
-                text-color: @foreground;
-              }
-              #element.normal.urgent {
-                background-color: @urgent-background;
-                text-color: @urgent-foreground;
-              }
-              #element.normal.active {
-                background-color: @active-background;
-                text-color: @background-color;
-              }
-              #element.selected.normal {
-                background-color: @selected-background;
-                text-color: @selected-foreground;
-              }
-              #element.selected.urgent {
-                background-color: @selected-urgent-background;
-                text-color: @foreground;
-              }
-              #element.selected.active {
-                background-color: @selected-active-background;
-                text-color: @background-color;
-              }
-              #element.alternate.normal {
-                background-color: @background-color;
-                text-color: @foreground;
-              }
-              #element.alternate.urgent {
-                background-color: @urgent-background;
-                text-color: @foreground;
-              }
-              #element.alternate.active {
-                background-color: @active-background;
-                text-color: @foreground;
-              }
-              #scrollbar {
-                width: 2px;
-                border: 0;
-                handle-width: 8px;
-                padding: 0;
-              }
-              #sidebar {
-                border: 2px dash 0px 0px;
-                border-color: @separatorcolor;
-              }
-              #button.selected {
-                background-color: @selected-background;
-                text-color: @selected-foreground;
-              }
-              #inputbar {
-                spacing: 0;
-                text-color: @foreground;
-                padding: 1px;
-                children: [ prompt,textbox-prompt-colon,entry,case-indicator ];
-              }
-              #case-indicator {
-                spacing: 0;
-                text-color: @foreground;
-              }
-              #entry {
-                spacing: 0;
-                text-color: @cyan;
-              }
-              #prompt {
-                spacing: 0;
-                text-color: @green;
-              }
-              #textbox-prompt-colon {
-                expand: false;
-                str: ">";
-                margin: 0px 0.3em 0em 0em;
-                text-color: @purple;
-              }
-              element-text, element-icon {
-                background-color: inherit;
-                text-color: inherit;
-              }
-            '';
-          in
-          "${rofiTheme}";
+        theme = {
+          window = {
+            border = 2;
+            border-radius = 12;
+            border-color = mkLiteral "@blue";
+            padding = 0;
+            width = mkLiteral "40em";
+          };
+          mainbox = {
+            border = 0;
+            padding = 0;
+          };
+          message = {
+            border = mkLiteral "0px";
+            padding = mkLiteral "4px 12px";
+          };
+          inputbar = {
+            spacing = mkLiteral "8px";
+            padding = mkLiteral "14px 16px";
+            border = mkLiteral "0px 0px 1px 0px";
+            border-color = mkLiteral "@blue";
+            children = mkLiteral "[ prompt, entry ]";
+          };
+          prompt.spacing = 0;
+          entry.spacing = 0;
+          listview = {
+            fixed-height = false;
+            border = mkLiteral "0px";
+            spacing = mkLiteral "2px";
+            scrollbar = false;
+            padding = mkLiteral "8px";
+            lines = 8;
+          };
+          element = {
+            border = 0;
+            border-radius = 8;
+            padding = mkLiteral "8px 10px";
+          };
+          "element-icon".size = mkLiteral "24px";
+          scrollbar = {
+            width = mkLiteral "2px";
+            border = 0;
+            handle-width = mkLiteral "8px";
+            padding = 0;
+          };
+        };
       };
 
       wayland.windowManager.hyprland.settings.bind =

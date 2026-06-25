@@ -1,7 +1,8 @@
 {
   flake.modules.homeManager.gui =
-    { pkgs, lib, ... }:
+    { pkgs, lib, config, ... }:
     let
+      c = config.lib.stylix.colors.withHashtag;
       backlight = pkgs.writeShellApplication {
         name = "waybar-backlight";
         runtimeInputs = [ pkgs.brightnessctl ];
@@ -28,15 +29,15 @@
       programs.waybar = {
         enable = true;
         style = /* css */ ''
-          @define-color background #1a1b26;
-          @define-color foreground #c0caf5;
-          @define-color red #f7768e;
-          @define-color magenta #bb9af7;
-          @define-color blue #7aa2f7;
-          @define-color cyan #7dcfff;
-          @define-color yellow #e0af68;
-          @define-color green #9ece6a;
-          @define-color orange #ff9e64;
+          @define-color background ${c.base00};
+          @define-color foreground ${c.base05};
+          @define-color red        ${c.base08};
+          @define-color orange     ${c.base09};
+          @define-color yellow     ${c.base0A};
+          @define-color green      ${c.base0B};
+          @define-color cyan       ${c.base0C};
+          @define-color blue       ${c.base0D};
+          @define-color magenta    ${c.base0E};
 
           @keyframes blink {
             to {

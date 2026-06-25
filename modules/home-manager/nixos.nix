@@ -11,6 +11,8 @@
       home-manager = {
         useGlobalPkgs = true;
         extraSpecialArgs.hasGlobalPkgs = true;
+        # Back up (rather than error on) any existing file HM wants to manage
+        backupFileExtension = "bak";
         # https://github.com/nix-community/home-manager/issues/6770
         #useUserPackages = true;
 

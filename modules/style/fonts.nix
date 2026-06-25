@@ -13,22 +13,32 @@
   };
 
   flake.modules.nixos.pc =
-    { pkgs, ... }:
+    { pkgs, lib, ... }:
+    let
+      emoji = config.flake.meta.fonts.emoji.name;
+    in
     {
-      fonts.packages = with pkgs; [
-        nerd-fonts.fira-code
-        nerd-fonts.symbols-only
-        noto-fonts
-        noto-fonts-color-emoji
+      # Extra symbols
+      fonts.packages = [
+        pkgs.nerd-fonts.symbols-only
+        pkgs.dejavu_fonts
       ];
-      fonts.fontconfig = {
-        enable = true;
-        defaultFonts = with config.flake.meta.fonts; {
-          sansSerif = [ sansSerif.name ];
-          serif = [ serif.name ];
-          monospace = [ monospace.name ];
-          emoji = [ emoji.name ];
-        };
+
+      # Symbols fallback for generic monospace requests
+      fonts.fontconfig.defaultFonts = {
+        monospace = lib.mkAfter [
+          "Symbols Nerd Font Mono"
+          "DejaVu Sans Mono"
+          emoji
+        ];
+        sansSerif = lib.mkAfter [
+          "Symbols Nerd Font"
+          emoji
+        ];
+        serif = lib.mkAfter [
+          "Symbols Nerd Font"
+          emoji
+        ];
       };
     };
 }
