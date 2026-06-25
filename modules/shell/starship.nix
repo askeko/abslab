@@ -103,7 +103,7 @@
       aws.symbol = " ";
       conda.symbol = " ";
       dart.symbol = " ";
-      directory.read_only = " ";
+      directory.read_only = " 󰌾";
       docker_context.symbol = " ";
       elixir.symbol = " ";
       elm.symbol = " ";
@@ -122,7 +122,7 @@
       ruby.symbol = " ";
       rust.symbol = " ";
       scala.symbol = " ";
-      swift.symbol = "ﯣ ";
+      swift.symbol = " ";
       #
     };
   };
