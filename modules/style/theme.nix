@@ -4,7 +4,7 @@ let
 in
 {
   flake.meta.theme = {
-    scheme = "rose-pine";
+    scheme = "kanagawa";
     mode = "dark";
     wallpaper.path = "/home/${config.flake.meta.owner.username}/pictures/wallpapers";
 
@@ -24,6 +24,20 @@ in
           spec =
             mode:
             ''{ "catppuccin/nvim", opts = { flavour = "${if mode == "dark" then "mocha" else "latte"}" } }'';
+        };
+      };
+      kanagawa = {
+        base16 = {
+          dark = "kanagawa-dragon";
+          light = "kanagawa-lotus";
+        };
+        lazyvim = {
+          name = "kanagawa";
+          spec =
+            mode:
+            ''{ "rebelot/kanagawa.nvim", opts = { theme = "${
+              if mode == "dark" then "dragon" else "lotus"
+            }", background = { dark = "dragon", light = "lotus" } }, init = function() vim.o.background = "${mode}" end }'';
         };
       };
       gruvbox = {
@@ -63,7 +77,23 @@ in
       ...
     }:
     let
-      base16Stem = meta.theme.schemes.${meta.theme.scheme}.base16.${meta.theme.mode};
+      # Resolve the active scheme's base16 YAML for a given mode: prefer a local
+      # ./schemes/<stem>.yaml (e.g. kanagawa-lotus) when present, otherwise resolve
+      # the stem against pkgs.base16-schemes.
+      base16FileFor =
+        mode:
+        let
+          stem = meta.theme.schemes.${meta.theme.scheme}.base16.${mode};
+          localScheme = ./schemes + "/${stem}.yaml";
+        in
+        if builtins.pathExists localScheme then
+          localScheme
+        else
+          "${pkgs.base16-schemes}/share/themes/${stem}.yaml";
+      base16File = base16FileFor meta.theme.mode;
+      # The opposite polarity, exposed below as a switchable specialisation so
+      # light<->dark is an instant activation instead of a full rebuild.
+      otherMode = if meta.theme.mode == "dark" then "light" else "dark";
     in
     {
       imports = [ inputs.stylix.nixosModules.stylix ];
@@ -91,8 +121,11 @@ in
       stylix = {
         enable = true;
         autoEnable = true;
-        base16Scheme = "${pkgs.base16-schemes}/share/themes/${base16Stem}.yaml";
+        base16Scheme = base16File;
         polarity = meta.theme.mode;
+
+        # For Inkspace to not require double space and build time with specializations
+        targets.gtksourceview.enable = false;
 
         # Slight terminal translucency
         opacity.terminal = lib.mkDefault 0.9;
@@ -131,6 +164,14 @@ in
             terminal = lib.mkDefault meta.fonts.sizes.terminal;
           };
         };
+      };
+
+      # Opposite-polarity build, kept resident so light<->dark is an instant
+      # activation rather than a rebuild:
+      #   sudo /run/current-system/specialisation/${otherMode}/bin/switch-to-configuration switch
+      specialisation.${otherMode}.configuration = {
+        stylix.base16Scheme = lib.mkForce (base16FileFor otherMode);
+        stylix.polarity = lib.mkForce otherMode;
       };
     };
 
