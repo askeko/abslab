@@ -13,6 +13,20 @@ A manual install from the **minimal** NixOS ISO onto an encrypted BTRFS root
 wiped to a clean state every boot, and only `/persist`, `/home` and `/nix`
 survive.
 
+These steps assume the target host already exists under `modules/hosts/<host>/`.
+Two paths differ only in the host config and the sops key:
+
+- **Reformatting an existing host** — its module, `hardware-configuration.nix`
+  template and `.sops.yaml` recipient are already in place. Reuse its sops host
+  key: back up `/var/lib/sops-nix/key.txt` first, restore it to
+  `/mnt/persist/var/lib/sops-nix/key.txt` during the install, and **skip the
+  Secrets Key step** (no `.sops.yaml` edit, no `updatekeys`).
+- **Adding a new host** — first scaffold `modules/hosts/<name>/` (`imports.nix`
+  importing `efi`, `pc`/`laptop`, `impermanence`, …; `hardware-configuration.nix`;
+  `hostname.nix`; `state-version.nix`; monitors/keyboard as needed), then add a
+  fresh `&<name>` recipient to `.sops.yaml`. There is no key to reuse — follow
+  the Secrets Key step as written.
+
 ### Installation Image
 
 Write the minimal ISO to a USB stick and boot it in UEFI mode:

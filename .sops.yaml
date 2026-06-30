@@ -6,9 +6,10 @@ keys:
   - &admin age1n9edxffn86cu4epu964a9wke373ssk4peyer46589rmzp44v6ukqnlql9u
 
   # One machine key per host. Generate on each host during install with:
-  #   age-keygen -y /var/lib/sops-nix/key.txt
+  #   age-keygen -y /mnt/persist/var/lib/sops-nix/key.txt
   - &lazarus age1ancp7x8mphvh3qmyhr4rjwrgz86cyxqzww2ftt3cw37mf6d2ndpsj328tr
-  #- &halflight age1REPLACE_WITH_HALFLIGHT_HOST_PUBLIC_KEY
+  # halflight: replace REPLACE… with the recipient printed at install, before `sops updatekeys`.
+  - &halflight age1REPLACE_WITH_HALFLIGHT_HOST_PUBLIC_KEY
 
 creation_rules:
   # Every secrets/*.yaml is encrypted to you + both hosts.
@@ -17,4 +18,4 @@ creation_rules:
       - age:
           - *admin
           - *lazarus
-  #        - *halflight
+          - *halflight

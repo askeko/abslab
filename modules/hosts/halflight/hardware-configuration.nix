@@ -22,23 +22,48 @@
       boot.kernelModules = [ "kvm-amd" ];
       boot.extraModulePackages = [ ];
 
+      # FILL IN: UUID of the LUKS partition (the crypto_LUKS one, e.g. nvme0n1p2).
+      #   blkid | grep crypto_LUKS
+      boot.initrd.luks.devices."cryptroot" = {
+        device = "/dev/disk/by-uuid/REPLACE-LUKS-PART-UUID";
+        crypttabExtraOpts = [ "fido2-device=auto" ];
+      };
+
       fileSystems."/" = {
-        device = "/dev/disk/by-uuid/88eb33a6-a638-45fe-9468-dc684af24025";
-        fsType = "ext4";
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        options = [ "subvol=root" "compress=zstd" "noatime" ];
       };
 
+      fileSystems."/nix" = {
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        options = [ "subvol=nix" "compress=zstd" "noatime" ];
+      };
+
+      fileSystems."/persist" = {
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        neededForBoot = true;
+        options = [ "subvol=persist" "compress=zstd" "noatime" ];
+      };
+
+      fileSystems."/home" = {
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        options = [ "subvol=home" "compress=zstd" "noatime" ];
+      };
+
+      # FILL IN: UUID of the ESP (the vfat boot partition, e.g. nvme0n1p1).
+      #   blkid | grep vfat
       fileSystems."/boot" = {
-        device = "/dev/disk/by-uuid/45C5-25E3";
+        device = "/dev/disk/by-uuid/REPLACE-ESP-UUID";
         fsType = "vfat";
-        options = [
-          "fmask=0077"
-          "dmask=0077"
-        ];
+        options = [ "fmask=0077" "dmask=0077" ];
       };
 
-      swapDevices = [
-        { device = "/dev/disk/by-uuid/a75f5134-b615-479c-b405-990dfc92f3bb"; }
-      ];
+      swapDevices = [ ];
+      zramSwap.enable = true;
 
       nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
       hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

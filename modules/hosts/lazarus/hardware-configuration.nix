@@ -15,7 +15,6 @@
         "nvme"
         "ahci"
         "xhci_pci"
-        "usbhid"
         "usb_storage"
         "sd_mod"
       ];
@@ -23,23 +22,48 @@
       boot.kernelModules = [ "kvm-amd" ];
       boot.extraModulePackages = [ ];
 
+      # FILL IN: UUID of the LUKS partition (crypto_LUKS, e.g. nvme0n1p2 or sdX2).
+      #   blkid | grep crypto_LUKS
+      boot.initrd.luks.devices."cryptroot" = {
+        device = "/dev/disk/by-uuid/REPLACE-LUKS-PART-UUID";
+        crypttabExtraOpts = [ "fido2-device=auto" ];
+      };
+
       fileSystems."/" = {
-        device = "/dev/disk/by-uuid/195cc87a-0546-46ee-ba1c-8c1d0c20898d";
-        fsType = "ext4";
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        options = [ "subvol=root" "compress=zstd" "noatime" ];
       };
 
+      fileSystems."/nix" = {
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        options = [ "subvol=nix" "compress=zstd" "noatime" ];
+      };
+
+      fileSystems."/persist" = {
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        neededForBoot = true;
+        options = [ "subvol=persist" "compress=zstd" "noatime" ];
+      };
+
+      fileSystems."/home" = {
+        device = "/dev/mapper/cryptroot";
+        fsType = "btrfs";
+        options = [ "subvol=home" "compress=zstd" "noatime" ];
+      };
+
+      # FILL IN: UUID of the ESP (vfat boot partition, e.g. nvme0n1p1 or sdX1).
+      #   blkid | grep vfat
       fileSystems."/boot" = {
-        device = "/dev/disk/by-uuid/E41D-DFD5";
+        device = "/dev/disk/by-uuid/REPLACE-ESP-UUID";
         fsType = "vfat";
-        options = [
-          "fmask=0077"
-          "dmask=0077"
-        ];
+        options = [ "fmask=0077" "dmask=0077" ];
       };
 
-      swapDevices = [
-        { device = "/dev/disk/by-uuid/8668e252-4f98-4fa0-b813-d7ca9a10794f"; }
-      ];
+      swapDevices = [ ];
+      zramSwap.enable = true;
 
       nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
       hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
