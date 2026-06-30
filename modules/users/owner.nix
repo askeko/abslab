@@ -18,7 +18,7 @@ in
           # Password hash is provisioned by sops-nix (see security/sops.nix).
           # `neededForUsers` on that secret makes it available in time.
           hashedPasswordFile = config.sops.secrets."users/${owner}/hashed-password".path;
-          uid = 1001; # pinned so it survives a reinstall (and external drives can match it)
+          uid = 1000; # pinned so it stays stable across reinstalls
         };
 
         nix.settings.trusted-users = [ owner ];
