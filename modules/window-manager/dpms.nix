@@ -18,9 +18,4 @@
         '';
       };
     };
-
-  # NOTE: the old `services.kmscon.extraConfig = "dpms-timeout=60"` block is left
-  # out on purpose — kmscon isn't enabled here, and `services.kmscon.config` was
-  # removed upstream (see style/theme.nix). It only set the *text-console* blank
-  # timeout, which is unrelated to the Wayland idle/lock handled in idle.nix.
 }
