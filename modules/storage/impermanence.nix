@@ -55,6 +55,7 @@
           "/var/log"
           "/var/lib/nixos"
           "/var/lib/systemd/coredump"
+          "/var/lib/systemd/rfkill"
           "/var/lib/bluetooth"
           "/var/lib/iwd"
           "/var/db/sudo"

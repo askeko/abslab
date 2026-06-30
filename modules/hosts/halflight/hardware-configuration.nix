@@ -25,7 +25,7 @@
       # FILL IN: UUID of the LUKS partition (the crypto_LUKS one, e.g. nvme0n1p2).
       #   blkid | grep crypto_LUKS
       boot.initrd.luks.devices."cryptroot" = {
-        device = "/dev/disk/by-uuid/REPLACE-LUKS-PART-UUID";
+        device = "/dev/disk/by-uuid/4f023994-b210-4900-a512-29f217543a8f";
         crypttabExtraOpts = [ "fido2-device=auto" ];
       };
 
@@ -57,7 +57,7 @@
       # FILL IN: UUID of the ESP (the vfat boot partition, e.g. nvme0n1p1).
       #   blkid | grep vfat
       fileSystems."/boot" = {
-        device = "/dev/disk/by-uuid/REPLACE-ESP-UUID";
+        device = "/dev/disk/by-uuid/923C-23E0";
         fsType = "vfat";
         options = [ "fmask=0077" "dmask=0077" ];
       };

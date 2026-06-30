@@ -28,5 +28,7 @@ in
     # This is also REQUIRED under impermanence: an imperatively-set or empty
     # password would be wiped on every boot; a declarative hash survives.
     sops.secrets."users/${owner}/hashed-password".neededForUsers = true;
+
+    sops.secrets."users/root/hashed-password".neededForUsers = true;
   };
 }
