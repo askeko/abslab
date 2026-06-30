@@ -1,3 +1,7 @@
+{ config, ... }:
+let
+  owner = config.flake.meta.owner.username;
+in
 {
   flake.modules.homeManager.base =
     { config, ... }:
@@ -24,5 +28,16 @@
             setSessionVariables = true;
           };
       };
+    };
+
+  # ~/tmp is the catch-all for the XDG dirs above — disposable scratch. It
+  # persists across reboots but entries older than 7 days are auto-removed
+  # (systemd-tmpfiles-clean.timer, daily).
+  flake.modules.nixos.base =
+    { config, ... }:
+    {
+      systemd.tmpfiles.rules = [
+        "d ${config.users.users.${owner}.home}/tmp 0700 ${owner} users 7d"
+      ];
     };
 }
