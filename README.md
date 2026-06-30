@@ -166,7 +166,10 @@ SOPS_AGE_KEY_FILE=<admin-key>.txt sops updatekeys secrets/secrets.yaml
 nixos-install --flake .#<host>
 ```
 
-Set the root password when prompted, then reboot.
+It prompts for a root password, but under impermanence that imperative one is
+wiped on first boot — root's (and your user's) actual password is the declarative
+sops hash from `secrets.yaml`. Set anything at the prompt (or `--no-root-passwd`),
+then reboot.
 
 ### First Boot
 
