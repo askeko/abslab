@@ -70,9 +70,9 @@ wpa_cli
 
 Identify the target disk with `lsblk -f`. This **erases** it, so pick carefully.
 
-| Partition | Size      | Type | Name        |
+| Partition | Size      | Type | Label       |
 | --------- | --------- | ---- | ----------- |
-| ESP       | 1 GiB     | EF00 | `boot`      |
+| ESP       | 1 GiB     | EF00 | `ESP`       |
 | LUKS root | remaining | 8300 | `cryptroot` |
 
 ```sh
@@ -95,7 +95,7 @@ cryptsetup open "${DISK}p2" cryptroot
 Format and create the subvolumes:
 
 ```sh
-mkfs.vfat -F32 -n boot "${DISK}p1"
+mkfs.vfat -F32 -n ESP "${DISK}p1"
 mkfs.btrfs -f -L nixos /dev/mapper/cryptroot
 
 mount /dev/mapper/cryptroot /mnt
@@ -127,15 +127,19 @@ git clone <repo-url> /mnt/persist/nixos-config
 cd /mnt/persist/nixos-config
 ```
 
-Generate the hardware config and merge `fileSystems`,
-`boot.initrd.luks.devices` and the kernel modules into
-`modules/hosts/<host>/hardware-configuration.nix`:
+The `hardware-configuration.nix` for each host already uses
+`/dev/disk/by-partlabel/ESP` and `/dev/disk/by-partlabel/cryptroot`, which
+match the labels set during partitioning above — no UUID substitution needed.
+
+Verify the kernel modules in `modules/hosts/<host>/hardware-configuration.nix`
+match what `nixos-generate-config` would emit for this machine:
 
 ```sh
 nixos-generate-config --root /mnt --show-hardware-config
 ```
 
-Then add the three things it can't detect:
+The following three settings are already present in the committed config but
+are not emitted by `nixos-generate-config` — keep them if you ever regenerate:
 
 ```nix
 boot.initrd.luks.devices."cryptroot".crypttabExtraOpts = [ "fido2-device=auto" ];
@@ -177,7 +181,7 @@ YubiKey(s) for disk unlock and the lock screen:
 # Disk — run once per key
 sudo systemd-cryptenroll \
   --fido2-device=auto --fido2-with-client-pin=yes --fido2-with-user-presence=yes \
-  /dev/disk/by-uuid/<luks-partition-uuid>
+  /dev/disk/by-partlabel/cryptroot
 
 # Lock screen / login (stored in persistent /home)
 mkdir -p ~/.config/Yubico

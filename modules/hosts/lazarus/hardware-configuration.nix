@@ -10,6 +10,7 @@
   configurations.nixos.lazarus.module =
     { config, ... }:
     {
+      hardware.enableRedistributableFirmware = true;
 
       boot.initrd.availableKernelModules = [
         "nvme"
@@ -22,10 +23,8 @@
       boot.kernelModules = [ "kvm-amd" ];
       boot.extraModulePackages = [ ];
 
-      # FILL IN: UUID of the LUKS partition (crypto_LUKS, e.g. nvme0n1p2 or sdX2).
-      #   blkid | grep crypto_LUKS
       boot.initrd.luks.devices."cryptroot" = {
-        device = "/dev/disk/by-uuid/REPLACE-LUKS-PART-UUID";
+        device = "/dev/disk/by-partlabel/cryptroot";
         crypttabExtraOpts = [ "fido2-device=auto" ];
       };
 
@@ -54,10 +53,8 @@
         options = [ "subvol=home" "compress=zstd" "noatime" ];
       };
 
-      # FILL IN: UUID of the ESP (vfat boot partition, e.g. nvme0n1p1 or sdX1).
-      #   blkid | grep vfat
       fileSystems."/boot" = {
-        device = "/dev/disk/by-uuid/REPLACE-ESP-UUID";
+        device = "/dev/disk/by-partlabel/ESP";
         fsType = "vfat";
         options = [ "fmask=0077" "dmask=0077" ];
       };
