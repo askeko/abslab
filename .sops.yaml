@@ -7,7 +7,7 @@ keys:
 
   # One machine key per host. Generate on each host during install with:
   #   age-keygen -y /mnt/persist/var/lib/sops-nix/key.txt
-  - &lazarus age1ancp7x8mphvh3qmyhr4rjwrgz86cyxqzww2ftt3cw37mf6d2ndpsj328tr
+  - &lazarus age12s357h6yln2jamfsxyd9heg8xmxyz0w72w3yvnrgmz4g368t2yssfy0myp
   - &halflight age1tpuhu93ff60wev5ycp2guaer5hzpxh06phgp7d2y2eagz950nqask2vj34
 
 creation_rules:
