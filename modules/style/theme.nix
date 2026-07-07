@@ -4,7 +4,7 @@ let
 in
 {
   flake.meta.theme = {
-    scheme = "rose-pine";
+    scheme = "tokyonight";
     mode = "dark";
     wallpaper.path = "/home/${config.flake.meta.owner.username}/pictures/wallpapers";
 
@@ -64,6 +64,45 @@ in
             ''{ "rose-pine/neovim", name = "rose-pine", opts = { variant = "${
               if mode == "dark" then "main" else "dawn"
             }" }, init = function() vim.o.background = "${mode}" end }'';
+        };
+      };
+      # tokyonight dark variants: moon (default), storm, night. Light is always
+      # Day. Switch dark variant by pointing `scheme` at another entry (rebuild);
+      # light<->dark stays the instant specialisation toggle.
+      tokyonight = {
+        base16 = {
+          dark = "tokyo-night-moon";
+          light = "tokyo-night-light";
+        };
+        lazyvim = {
+          name = "tokyonight";
+          spec =
+            mode:
+            ''{ "folke/tokyonight.nvim", opts = { style = "moon", light_style = "day" }, init = function() vim.o.background = "${mode}" end }'';
+        };
+      };
+      tokyonight-storm = {
+        base16 = {
+          dark = "tokyo-night-storm";
+          light = "tokyo-night-light";
+        };
+        lazyvim = {
+          name = "tokyonight";
+          spec =
+            mode:
+            ''{ "folke/tokyonight.nvim", opts = { style = "storm", light_style = "day" }, init = function() vim.o.background = "${mode}" end }'';
+        };
+      };
+      tokyonight-night = {
+        base16 = {
+          dark = "tokyo-night-dark";
+          light = "tokyo-night-light";
+        };
+        lazyvim = {
+          name = "tokyonight";
+          spec =
+            mode:
+            ''{ "folke/tokyonight.nvim", opts = { style = "night", light_style = "day" }, init = function() vim.o.background = "${mode}" end }'';
         };
       };
     };
