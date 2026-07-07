@@ -4,7 +4,7 @@ let
 in
 {
   flake.meta.theme = {
-    scheme = "kanagawa";
+    scheme = "rose-pine";
     mode = "dark";
     wallpaper.path = "/home/${config.flake.meta.owner.username}/pictures/wallpapers";
 

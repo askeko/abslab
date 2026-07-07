@@ -8,6 +8,17 @@ let
   owner = config.flake.meta.owner.username;
 in
 {
+  # Secrets tooling for the dev shell (justfile: secrets-edit, encrypt,
+  # vpn-add, wifi-add, updatekeys).
+  perSystem =
+    { pkgs, ... }:
+    {
+      make-shells.default.packages = with pkgs; [
+        sops
+        age
+      ];
+    };
+
   flake.modules.nixos.base = {
     imports = [ inputs.sops-nix.nixosModules.sops ];
 

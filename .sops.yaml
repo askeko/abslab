@@ -18,3 +18,21 @@ creation_rules:
           - *admin
           - *lazarus
           - *halflight
+
+  # iwd Wi-Fi network profiles encrypted whole-file. Encrypt with:
+  #   sops -e -i secrets/iwd/<SSID>.psk
+  - path_regex: secrets/iwd/[^/]+\.psk$
+    key_groups:
+      - age:
+          - *admin
+          - *lazarus
+          - *halflight
+
+  # WireGuard configs (ProtonVPN downloads) encrypted whole-file. Encrypt with:
+  #   sops -e -i secrets/wireguard/<name>.conf
+  - path_regex: secrets/wireguard/[^/]+\.conf$
+    key_groups:
+      - age:
+          - *admin
+          - *lazarus
+          - *halflight

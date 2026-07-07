@@ -4,7 +4,47 @@ An attempt at adopting the dendritic pattern with flake-parts for my NixOS multi
 
 ## Features
 
+### Secrets
 
+Secrets are managed with [sops-nix](https://github.com/Mic92/sops-nix) and age.
+Recipients live in `.sops.yaml`: one admin key (kept **off** the hosts, e.g. in
+a password manager — it is the escrow/recovery key and is only needed to edit
+secrets or re-key hosts) plus one machine key per host at
+`/persist/var/lib/sops-nix/key.txt`.
+
+Two storage patterns:
+
+- **`secrets/secrets.yaml`** — small values wired into nix options (user
+  password hashes, GitHub SSH key). Edit with `just secrets-edit`.
+- **Whole-file drop-in directories** — files decrypted verbatim to a path at
+  activation; modules auto-discover them, so adding one needs no nix changes:
+
+  | Directory            | Decrypted to        | Used by                          |
+  | -------------------- | ------------------- | -------------------------------- |
+  | `secrets/wireguard/` | `/etc/wireguard/`   | `wg-quick` via the rofi VPN menu |
+  | `secrets/iwd/`       | `/var/lib/iwd/`     | iwd Wi-Fi profiles               |
+
+Remember to `git add` new secret files — flakes only see tracked files. Never
+commit a plaintext secret: encrypt first (`sops filestatus <file>` shows the
+current state).
+
+### Task runner
+
+`just` is the task runner; recipes run inside the dev shell (`nix develop`),
+which provides `just`, `sops`, `age` and the lint/format tools.
+
+| Recipe                | Purpose                                                    |
+| --------------------- | ---------------------------------------------------------- |
+| `just switch`         | Build and switch to the current host configuration        |
+| `just test`           | Activate without adding a boot entry (reverts on reboot)  |
+| `just build`          | Build only, no activation                                  |
+| `just lint`           | Run linters (statix, deadnix)                              |
+| `just fmt`            | Format all nix files (nixfmt)                              |
+| `just secrets-edit`   | Edit `secrets/secrets.yaml`                                |
+| `just encrypt <file>` | Encrypt a secret file in place; refuses to double-encrypt |
+| `just vpn-add <file>` | Import a WireGuard config into `secrets/wireguard/` (name ≤ 15 chars) |
+| `just wifi-add <ssid>`| Create + encrypt an iwd Wi-Fi profile; prompts for the passphrase |
+| `just updatekeys`     | Re-encrypt every secret to the current `.sops.yaml` recipients |
 
 ## Installation
 
@@ -158,10 +198,15 @@ sudo age-keygen -y /mnt/persist/var/lib/sops-nix/key.txt   # public recipient
 sudo chmod 600 /mnt/persist/var/lib/sops-nix/key.txt
 ```
 
-Add the recipient to `.sops.yaml`, then re-encrypt with the admin key:
+Add the recipient to `.sops.yaml`, then re-encrypt **all** secret files with
+the admin key (`secrets.yaml` plus the whole-file secrets under
+`secrets/wireguard/` and `secrets/iwd/`):
 
 ```sh
-SOPS_AGE_KEY_FILE=<admin-key>.txt sops updatekeys secrets/secrets.yaml
+SOPS_AGE_KEY_FILE=<admin-key>.txt just updatekeys
+# without just:
+SOPS_AGE_KEY_FILE=<admin-key>.txt find secrets -type f \
+  \( -name '*.yaml' -o -name '*.conf' -o -name '*.psk' \) -exec sops updatekeys -y {} \;
 ```
 
 ### Installation
@@ -204,7 +249,53 @@ Reboot — boot asks for FIDO2 PIN + touch, autologin lands in Hyprland, and
 
 ## Theming
 
+Declarative theming via [Stylix](https://github.com/nix-community/stylix),
+driven by two values in `modules/style/theme.nix`:
 
+```nix
+flake.meta.theme.scheme = "gruvbox";   # any key from the scheme registry
+flake.meta.theme.mode   = "dark";      # or "light"
+```
+
+### Scheme registry
+
+`flake.meta.theme.schemes` (same file) is the single source of truth for colour
+schemes. Each entry maps the scheme to a base16 stem per mode (consumed by
+Stylix) and a LazyVim colorscheme spec (consumed by `modules/style/lazyvim.nix`) - add 
+a scheme there once and every themed tool can use it. Base16 YAMLs
+resolve against `pkgs.base16-schemes`, with `modules/style/schemes/<stem>.yaml`
+as a local override for stems nixpkgs doesn't ship.
+
+Most applications are themed automatically by Stylix (`autoEnable`); a few
+targets are opted out and themed by their own modules instead: waybar (palette
+vars in `waybar.nix`), neovim (LazyVim manages its colorscheme) and hyprlock
+(`screenlock.nix`).
+
+### Light/dark switching
+
+The opposite polarity is built as a NixOS **specialisation**, so switching
+between light and dark is an instant activation rather than a rebuild:
+
+```sh
+SUPER+SHIFT+S
+```
+
+LazyVim follows along by reading the live `stylix.polarity` and invalidating
+nvim's loader cache on activation.
+
+### Fonts
+
+Font families and sizes live in `flake.meta.fonts` and feed both Stylix and
+fontconfig.
+
+### Wallpaper
+
+Wallpapers are managed by **hyprpaper**, not Stylix (Stylix is fed a solid
+pixel in the scheme's background colour, so its palette tracks the scheme
+without pinning an image). `SUPER+b` opens a rofi picker over
+`~/pictures/wallpapers`; the current choice is kept as a
+`~/.local/state/theme/current-wallpaper` symlink, restored on login and read by
+hyprlock so the lock screen follows the live wallpaper.
 
 ## References
 
