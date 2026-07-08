@@ -69,13 +69,21 @@
         };
       };
 
-      wayland.windowManager.hyprland.settings.bind =
+      programs.niri.settings.binds =
         let
           rofi = lib.getExe hmArgs.config.programs.rofi.package;
         in
-        [
-          "SUPER, d, exec, ${rofi} -show drun"
-          "SUPER+SHIFT, d, exec, ${rofi} -show run"
-        ];
+        {
+          "Mod+D".action.spawn = [
+            rofi
+            "-show"
+            "drun"
+          ];
+          "Mod+Shift+D".action.spawn = [
+            rofi
+            "-show"
+            "run"
+          ];
+        };
     };
 }

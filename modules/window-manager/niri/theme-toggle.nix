@@ -86,8 +86,6 @@ in
     {
       home.file.${stateRel}.text = mode;
 
-      wayland.windowManager.hyprland.settings.bind = [
-        "SUPER+SHIFT, s, exec, ${lib.getExe theme-toggle}"
-      ];
+      programs.niri.settings.binds."Mod+Shift+S".action.spawn = lib.getExe theme-toggle;
     };
 }

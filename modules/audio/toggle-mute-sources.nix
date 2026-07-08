@@ -27,8 +27,6 @@
     {
       home.packages = [ toggle-mute-sources ];
 
-      wayland.windowManager.hyprland.settings.bind = [
-        "SUPER, z, exec, ${lib.getExe toggle-mute-sources}"
-      ];
+      programs.niri.settings.binds."Mod+Z".action.spawn = lib.getExe toggle-mute-sources;
     };
 }

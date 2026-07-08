@@ -244,7 +244,7 @@ sudo nixos-rebuild boot --flake .#<host>
 echo wiped | sudo tee /test-impermanence
 ```
 
-Reboot — boot asks for FIDO2 PIN + touch, autologin lands in Hyprland, and
+Reboot — boot asks for FIDO2 PIN + touch, autologin lands in niri, and
 `/test-impermanence` is gone.
 
 ## Theming
@@ -290,7 +290,7 @@ fontconfig.
 
 ### Wallpaper
 
-Wallpapers are managed by **hyprpaper**, not Stylix (Stylix is fed a solid
+Wallpapers are managed by **awww** (maintained swww fork), not Stylix (Stylix is fed a solid
 pixel in the scheme's background colour, so its palette tracks the scheme
 without pinning an image). `SUPER+b` opens a rofi picker over
 `~/pictures/wallpapers`; the current choice is kept as a

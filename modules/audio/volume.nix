@@ -6,27 +6,39 @@
       step = 5;
       pactl = lib.getExe' pkgs.pulseaudio "pactl";
 
-      incVol =
-        d:
-        lib.concatStringsSep " " [
-          pactl
-          "set-sink-volume @DEFAULT_SINK@ ${d}${toString step}%"
-        ];
-
-      muteVol = "${pactl} set-sink-mute @DEFAULT_SINK@ toggle";
+      incVolArgs = d: [
+        pactl
+        "set-sink-volume"
+        "@DEFAULT_SINK@"
+        "${d}${toString step}%"
+      ];
+      muteVolArgs = [
+        pactl
+        "set-sink-mute"
+        "@DEFAULT_SINK@"
+        "toggle"
+      ];
 
     in
     {
-      wayland.windowManager.hyprland.settings.bind = [
-        # Set volume with fn keys
-        ",XF86AudioLowerVolume, exec, ${incVol "-"}"
-        ",XF86AudioRaiseVolume, exec, ${incVol "+"}"
-        ",XF86AudioMute, exec, ${muteVol}"
+      programs.niri.settings.binds = {
+        # Fn keys stay usable on the lock screen
+        "XF86AudioLowerVolume" = {
+          action.spawn = incVolArgs "-";
+          allow-when-locked = true;
+        };
+        "XF86AudioRaiseVolume" = {
+          action.spawn = incVolArgs "+";
+          allow-when-locked = true;
+        };
+        "XF86AudioMute" = {
+          action.spawn = muteVolArgs;
+          allow-when-locked = true;
+        };
 
-        # Set volume
-        "SUPER+SHIFT, minus, exec, ${incVol "-"}"
-        "SUPER+SHIFT, plus, exec, ${incVol "+"}"
-        "SUPER+SHIFT, m, exec, ${muteVol}"
-      ];
+        "Mod+Shift+Minus".action.spawn = incVolArgs "-";
+        "Mod+Shift+Plus".action.spawn = incVolArgs "+";
+        "Mod+Shift+M".action.spawn = muteVolArgs;
+      };
     };
 }

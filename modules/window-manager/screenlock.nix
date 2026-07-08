@@ -14,9 +14,8 @@
       currentWallpaper = "${config.home.homeDirectory}/.local/state/theme/current-wallpaper";
     in
     {
-      wayland.windowManager.hyprland.settings.bind = [
-        "SUPER+ALT, l, exec, ${lockCommand}"
-      ];
+      # hyprlock is compositor-agnostic (ext-session-lock) and stays on niri.
+      programs.niri.settings.binds."Mod+Alt+L".action.spawn = lockCommand;
 
       programs.hyprlock = {
         enable = true;

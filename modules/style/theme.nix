@@ -151,7 +151,7 @@ in
               neovim.enable = false; # LazyVim manages its own colorscheme
               hyprlock.enable = false; # background/colors managed in screenlock.nix
               firefox.profileNames = [ "primary" ];
-              firefox.firefoxGnomeTheme.enable = true; # GNOME-style chrome + stylix-colored userChrome
+              firefox.firefoxGnomeTheme.enable = true;
             };
           };
         }
@@ -168,7 +168,7 @@ in
 
         # Slight terminal translucency
         opacity.terminal = lib.mkDefault 0.9;
-        # The live desktop wallpaper is managed by hyprpaper (window-manager/wallpaper.nix)
+        # The live desktop wallpaper is managed by awww (window-manager/wallpaper.nix)
         # from ~/pictures, which a flake's pure eval can't reference. Stylix still requires
         # an image, so feed it a solid pixel generated from the active scheme's background
         # colour - it tracks scheme/mode automatically instead of pinning catppuccin.

@@ -17,9 +17,7 @@
           enable = true;
           settings.default = [ hmArgs.config.terminal.desktopFileId ];
         };
-        wayland.windowManager.hyprland.settings.bind = [
-          "SUPER, Return, exec, ${hmArgs.config.terminal.path}"
-        ];
+        programs.niri.settings.binds."Mod+Return".action.spawn = "${hmArgs.config.terminal.path}";
       };
     };
 }

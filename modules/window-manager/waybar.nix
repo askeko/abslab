@@ -99,7 +99,8 @@
             border-radius: 1rem;
           }
 
-          #workspaces button.active {
+          #workspaces button.active,
+          #workspaces button.focused {
             color: @cyan;
             border-radius: 1rem;
           }
@@ -221,7 +222,7 @@
             position = "top";
 
             modules-left = [
-              "hyprland/workspaces"
+              "niri/workspaces"
               "custom/temperature"
               "cpu"
               "memory"
@@ -238,31 +239,15 @@
               "tray"
             ];
 
-            "hyprland/workspaces" = {
-              active-only = false;
-              all-outputs = true;
-              show-special = true;
+            # Workspaces are dynamic per-monitor under niri — no persistent
+            # workspace list; the bar shows what exists on each output.
+            "niri/workspaces" = {
               format = "{icon}";
               format-icons = {
+                focused = "󱄅";
                 active = "󱄅";
-                persistent = "";
-                empty = "";
                 urgent = "";
-                default = "󱄅";
-              };
-              persistent-workspaces = {
-                "*" = [
-                  1
-                  2
-                  3
-                  4
-                  5
-                  6
-                  7
-                  8
-                  9
-                  10
-                ];
+                default = "";
               };
             };
 
@@ -394,6 +379,9 @@
         };
       };
 
-      wayland.windowManager.hyprland.settings.exec-once = [ "waybar" ];
+      # systemd unit instead of compositor autostart: ties into
+      # graphical-session.target (which niri-session manages), restarts on HM
+      # switch so theme changes apply, and logs to the journal.
+      programs.waybar.systemd.enable = true;
     };
 }

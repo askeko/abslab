@@ -11,8 +11,8 @@ in
     hmArgs@{ pkgs, ... }:
     let
       rofi = lib.getExe hmArgs.config.programs.rofi.package;
-      hyprctl = "${pkgs.hyprland}/bin/hyprctl";
-      jq = "${pkgs.jq}/bin/jq";
+      # awww is the maintained swww fork; unit and CLI are both named awww.
+      awww = lib.getExe hmArgs.config.services.awww.package;
 
       homeDir = hmArgs.config.home.homeDirectory;
       currentLinkAbs = "${homeDir}/.local/state/theme/current-wallpaper";
@@ -22,10 +22,7 @@ in
           local path="$1"
           mkdir -p "$HOME/.local/state/theme"
           ln -sf "$path" "${currentLink}"
-          ${hyprctl} hyprpaper preload "$path" || true
-          while IFS= read -r monitor; do
-            ${hyprctl} hyprpaper wallpaper "$monitor,$path"
-          done < <(${hyprctl} monitors -j | ${jq} -r '.[].name')
+          ${awww} img "$path" --transition-type fade
         }
       '';
 
@@ -56,12 +53,29 @@ in
         '';
       };
 
+      # The symlink (not awww's own cache) is the source of truth: a retarget
+      # made while logged out — e.g. by the theme specialisation — must win.
+      wallpaper-restore = pkgs.writeShellApplication {
+        name = "wallpaper-restore";
+        runtimeInputs = [
+          hmArgs.config.services.awww.package
+          pkgs.coreutils
+        ];
+        text = ''
+          for _ in $(seq 50); do
+            if awww query >/dev/null 2>&1; then
+              awww img "${currentLinkAbs}" --transition-type none
+              exit 0
+            fi
+            sleep 0.2
+          done
+          echo "awww daemon never came up" >&2
+          exit 1
+        '';
+      };
     in
     {
-      wayland.windowManager.hyprland.settings = {
-        misc.disable_hyprland_logo = true;
-        bind = [ "SUPER, b, exec, wallpaper-picker" ];
-      };
+      programs.niri.settings.binds."Mod+B".action.spawn = "wallpaper-picker";
 
       home.packages = [ wallpaperPicker ];
 
@@ -71,9 +85,9 @@ in
         max-icon-size = 128;
       };
 
-      # Ensure the symlink exists (pointing at the default) before hyprpaper
-      # starts, so the build-time config below always resolves to a real file,
-      # even on a fresh machine with no saved wallpaper state yet.
+      # Ensure the symlink exists (pointing at the default) before the daemon
+      # starts, so restore always resolves to a real file, even on a fresh
+      # machine with no saved wallpaper state yet.
       home.activation.seedWallpaperLink = hmArgs.lib.hm.dag.entryAfter [ "writeBoundary" ] ''
         run mkdir -p "${homeDir}/.local/state/theme"
         if [ ! -e "${currentLinkAbs}" ]; then
@@ -81,19 +95,21 @@ in
         fi
       '';
 
-      services.hyprpaper = {
-        enable = true;
-        settings = {
-          splash = false;
-          preload = [ currentLinkAbs ];
-          wallpaper = [
-            {
-              monitor = "";
-              path = currentLinkAbs;
-              fit_mode = "stretch";
-            }
-          ];
+      # awww: switches at runtime with a fade, which is what the picker relies on.
+      services.awww.enable = true;
+
+      systemd.user.services.wallpaper-restore = {
+        Unit = {
+          Description = "Restore wallpaper from the current-wallpaper symlink";
+          After = [ "awww.service" ];
+          BindsTo = [ "awww.service" ];
         };
+        Service = {
+          Type = "oneshot";
+          ExecStart = lib.getExe wallpaper-restore;
+          RemainAfterExit = true;
+        };
+        Install.WantedBy = [ "awww.service" ];
       };
     };
 }

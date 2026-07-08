@@ -8,9 +8,13 @@
     {
       home.packages = [ rofimoji ];
 
-      wayland.windowManager.hyprland.settings.bind = [
-        "SUPER, u, exec, ${lib.getExe rofimoji}"
-        "SUPER+SHIFT, u, exec, ${lib.getExe rofimoji} --files all"
-      ];
+      programs.niri.settings.binds = {
+        "Mod+U".action.spawn = lib.getExe rofimoji;
+        "Mod+Shift+U".action.spawn = [
+          (lib.getExe rofimoji)
+          "--files"
+          "all"
+        ];
+      };
     };
 }

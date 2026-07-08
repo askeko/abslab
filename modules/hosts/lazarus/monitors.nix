@@ -2,24 +2,33 @@
 {
   configurations.nixos.lazarus.module = {
     home-manager.users.${config.flake.meta.owner.username} = {
-      wayland.windowManager.hyprland.settings = {
-        monitor = [
-          "desc:Samsung Electric Company Odyssey G85SB H1AK500000,3440x1440@174.96Hz,0x0,1,bitdepth, 10, cm, hdr"
-          "desc:Acer Technologies XB271HU,2560x1440@165.00Hz,-2560x0,1"
-        ];
-
-        workspace = [
-          "1,monitor:desc:Samsung Electric Company Odyssey G85SB,default:true"
-          "2,monitor:desc:Samsung Electric Company Odyssey G85SB,default:true"
-          "3,monitor:desc:Samsung Electric Company Odyssey G85SB,default:true"
-          "4,monitor:desc:Samsung Electric Company Odyssey G85SB,default:true"
-          "5,monitor:desc:Samsung Electric Company Odyssey G85SB,default:true"
-          "6,monitor:desc:Acer Technologies XB271HU,default:true"
-          "7,monitor:desc:Acer Technologies XB271HU,default:true"
-          "8,monitor:desc:Acer Technologies XB271HU,default:true"
-          "9,monitor:desc:Acer Technologies XB271HU,default:true"
-          "10,monitor:desc:Acer Technologies XB271HU,default:true"
-        ];
+      # No HDR/bitdepth under niri (HDR output is disabled upstream) — the
+      # Samsung runs SDR, which also removes the hyprlock HDR-crash class.
+      # Workspaces are dynamic per-monitor; no pinning equivalent needed.
+      programs.niri.settings.outputs = {
+        "Samsung Electric Company Odyssey G85SB H1AK500000" = {
+          mode = {
+            width = 3440;
+            height = 1440;
+            refresh = 174.962;
+          };
+          position = {
+            x = 0;
+            y = 0;
+          };
+          focus-at-startup = true;
+        };
+        "Acer Technologies XB271HU #ASOehCXoFYrd" = {
+          mode = {
+            width = 2560;
+            height = 1440;
+            refresh = 165.000;
+          };
+          position = {
+            x = -2560;
+            y = 0;
+          };
+        };
       };
     };
   };

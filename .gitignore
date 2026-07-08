@@ -1,3 +1,8 @@
 # nix build / nh os build output symlinks
 result
 result-*
+
+.direnv/
+!.envrc
+
+.devenv/

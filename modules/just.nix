@@ -8,5 +8,6 @@
         deadnix
         nixfmt
       ];
+      make-shells.default.shellHook = "exec zsh";
     };
 }

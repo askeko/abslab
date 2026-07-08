@@ -10,8 +10,6 @@
       xdg.configFile."rofi-rbw.rc".text = lib.generators.toINIWithGlobalSection { } {
         globalSection = { };
       };
-      wayland.windowManager.hyprland.settings.bind = [
-        "SUPER, m, exec, ${lib.getExe package}"
-      ];
+      programs.niri.settings.binds."Mod+M".action.spawn = lib.getExe package;
     };
 }
