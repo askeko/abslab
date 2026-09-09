@@ -15,6 +15,8 @@ All `.nix` files under `modules/` are auto-loaded by `import-tree ./modules` —
 Hosts: `lazarus` (desktop, inherits `pc`), `halflight` (laptop, inherits `laptop → pc`).
 Owner username: `absentia`. Home directory: `/home/absentia`.
 
+Compositor: **niri** (scrollable tiling, via the `niri-flake` input with the nixpkgs niri package) — Hyprland was removed in the niri migration; don't reintroduce it. **hyprlock + hypridle stay** (both compositor-agnostic: ext-session-lock / ext-idle-notify), so `hyprlock`/`hypridle` references in `screenlock.nix`, `idle.nix`, `yubikey.nix`, and `theme.nix` are intentional. Binds live in `programs.niri.settings.binds`, spread across feature modules (dendritic style); compositor-level config is in `modules/window-manager/niri/`.
+
 ## Module system
 
 ### Namespaces
@@ -106,7 +108,7 @@ Stylix-based declarative theming controlled by `flake.meta.theme.scheme` / `flak
 - **Stylix is a flake input** (`inputs.stylix`); the NixOS module is imported in `theme.nix`.
 - **`modules/style/theme.nix`** holds the Stylix wiring and the `flake.meta.theme.schemes` registry (one entry feeds both Stylix's base16 scheme and LazyVim); it augments the existing `nixos.pc` and `homeManager.gui` namespaces — no new module keys.
 - **`modules/style/fonts.nix`** completes the fontconfig fallback chain (Symbols NF Mono → DejaVu Sans Mono → Noto Color Emoji) so kitty/etc. render dingbats/arrows/emoji — do **not** reintroduce a kitty `symbol_map`.
-- **`modules/window-manager/wallpaper.nix`** stays on `hyprpaper` (decision: no swww migration): rofi `wallpaper-picker` + `wallpaper-restore`, and maintains a `~/.local/state/theme/current-wallpaper` symlink that hyprlock reads so the lock screen follows the live wallpaper.
+- **`modules/window-manager/wallpaper.nix`** uses **awww** (the maintained swww fork; HM module `services.awww`, unit and CLI both named `awww`): rofi `wallpaper-picker` + `wallpaper-restore`, and maintains a `~/.local/state/theme/current-wallpaper` symlink that hyprlock reads so the lock screen follows the live wallpaper.
 - Theme options live under `flake.meta.theme.*` (consistent with `flake.meta.fonts`), not a new `my.*` namespace.
 - **Discord stays the official client** (not Vesktop): Vesktop's Electron 40 breaks per-window screenshare. Don't re-attempt the swap.
 

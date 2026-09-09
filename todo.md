@@ -1,6 +1,15 @@
 # Fixes
 - Fix Just
-- Hyprland starts on an "undefined" workspace
+
+# Niri migration follow-ups
+- Automatic notification privacy during screencasts: the mako privacy mode was
+  toggled by a Hyprland socket2 listener (handle-hyprland-screencast); niri has
+  no screencast event in its event stream — watch the ScreenCast portal over
+  D-Bus, or check newer niri releases. Manual toggle still works via
+  notification-privacy-on/off.
+- halflight projector mirroring: niri has no output mirroring; use wl-mirror
+  when presenting (the old Hyprland config mirrored Samsung/Lightware outputs
+  to eDP-1).
 
 # Extras
 
@@ -22,9 +31,8 @@ Themable programs
 
 ## Window Manager / Compositor
 
-- Hyprland
+- Niri
 - Hyprlock
-- Hyprpaper
 
 ## Bar / Launcher / Notifications
 

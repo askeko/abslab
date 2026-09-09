@@ -9,9 +9,23 @@
       home.packages = with pkgs; [
         brightnessctl
       ];
-      wayland.windowManager.hyprland.settings.bind = [
-        ",XF86MonBrightnessUp, exec, ${bright} set +10%"
-        ",XF86MonBrightnessDown, exec, ${bright} set 10%-"
-      ];
+      programs.niri.settings.binds = {
+        "XF86MonBrightnessUp" = {
+          action.spawn = [
+            bright
+            "set"
+            "+10%"
+          ];
+          allow-when-locked = true;
+        };
+        "XF86MonBrightnessDown" = {
+          action.spawn = [
+            bright
+            "set"
+            "10%-"
+          ];
+          allow-when-locked = true;
+        };
+      };
     };
 }

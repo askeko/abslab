@@ -4,7 +4,9 @@
     {
       packages.dpms-all = pkgs.writeShellApplication {
         name = "dpms-all";
-        runtimeInputs = [ pkgs.hyprland ];
+        runtimeInputs = [
+          pkgs.niri
+        ];
         text = ''
           if [ $# -ne 1 ]; then
               echo "Usage: $0 [on|off]" >&2
@@ -14,7 +16,7 @@
               echo "Usage: $0 [on|off]" >&2
               exit 1
           fi
-          hyprctl dispatch dpms "$1"
+          niri msg action "power-$1-monitors"
         '';
       };
     };

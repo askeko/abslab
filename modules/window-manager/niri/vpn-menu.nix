@@ -1,10 +1,8 @@
 {
   flake.modules.homeManager.gui =
     hmArgs@{ pkgs, lib, ... }:
-    {
-      wayland.windowManager.hyprland.settings.bind =
-        let
-          vpn-menu = pkgs.writeShellApplication {
+    let
+      vpn-menu = pkgs.writeShellApplication {
             name = "vpn-menu";
             runtimeInputs = [
               hmArgs.config.programs.rofi.package
@@ -49,7 +47,8 @@
               esac
             '';
           };
-        in
-        [ "SUPER+SHIFT, v, exec, ${lib.getExe vpn-menu}" ];
+    in
+    {
+      programs.niri.settings.binds."Mod+Shift+V".action.spawn = lib.getExe vpn-menu;
     };
 }

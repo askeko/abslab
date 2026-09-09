@@ -5,6 +5,22 @@
       pkgs,
       ...
     }:
+    let
+      rofi-cliphist = pkgs.writeShellApplication {
+        name = "rofi-cliphist";
+        runtimeInputs = [
+          hmArgs.config.services.cliphist.package
+          hmArgs.config.programs.rofi.package
+        ];
+        text = ''
+          prompt=' 󰆏 '
+          content=$(cliphist list | rofi -dmenu -p "$prompt")
+          decoded=$(cliphist decode <<<"$content")
+
+          echo "$decoded" | wl-copy
+        '';
+      };
+    in
     {
       services.cliphist.enable = true;
 
@@ -12,23 +28,6 @@
         wl-clipboard-rs
       ];
 
-      wayland.windowManager.hyprland.settings.bind =
-        let
-          rofi-cliphist = pkgs.writeShellApplication {
-            name = "rofi-cliphist";
-            runtimeInputs = [
-              hmArgs.config.services.cliphist.package
-              hmArgs.config.programs.rofi.package
-            ];
-            text = ''
-              prompt=' 󰆏 '
-              content=$(cliphist list | rofi -dmenu -p "$prompt")
-              decoded=$(cliphist decode <<<"$content")
-
-              echo "$decoded" | wl-copy
-            '';
-          };
-        in
-        [ "SUPER, p, exec, ${lib.getExe rofi-cliphist}" ];
+      programs.niri.settings.binds."Mod+P".action.spawn = lib.getExe rofi-cliphist;
     };
 }

@@ -26,11 +26,7 @@
       };
     };
 
-    wayland.windowManager.hyprland.settings = {
-      bind = [
-        "SUPER, w, exec, ${lib.getExe hmArgs.config.programs.firefox.package}"
-      ];
-    };
+    programs.niri.settings.binds."Mod+W".action.spawn = lib.getExe hmArgs.config.programs.firefox.package;
 
     xdg.mimeApps.defaultApplications =
       [

@@ -1,25 +1,19 @@
 {
   flake.modules.homeManager.gui = {
-    wayland.windowManager.hyprland.settings = {
+    # Cursor theme/size come from the stylix target.
+    programs.niri.settings = {
       input = {
-        # Focus window at mouse
-        follow_mouse = 1;
-
-        # Touchpad scroll direction
+        focus-follows-mouse.enable = true;
         touchpad = {
-          natural_scroll = "true";
-          tap-to-click = true;
+          natural-scroll = true;
+          tap = true;
         };
-
-        # Set mouse acceleration (adaptive/flat/custom)
-        accel_profile = "flat";
-        # Set mouse sensitivity
-        sensitivity = 0.2; # -1.0 - 1.0, 0 means no modification
+        mouse = {
+          accel-profile = "flat";
+          accel-speed = 0.2;
+        };
       };
-
-      cursor = {
-        inactive_timeout = 2;
-      };
+      cursor.hide-after-inactive-ms = 2000;
     };
   };
 }
