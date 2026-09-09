@@ -18,6 +18,11 @@
       programs.niri.package = lib.mkDefault pkgs.niri;
       niri-flake.cache.enable = lib.mkDefault false;
 
+      xdg.portal = {
+        enable = true;
+        extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+        config.common.default = "*";
+      };
     };
 
   # niri-session hops through a login shell (SHLVL=1) and then runs a blanket
@@ -36,8 +41,6 @@
       # clients, but only if it can find the binary. niri-flake only fills in
       # the path for its own niri builds — with pkgs.niri it stays null and
       # X11 apps (Discord, etc.) die with "Missing X server or $DISPLAY".
-      programs.niri.settings.xwayland-satellite.path = lib.mkDefault (
-        lib.getExe pkgs.xwayland-satellite
-      );
+      programs.niri.settings.xwayland-satellite.path = lib.mkDefault (lib.getExe pkgs.xwayland-satellite);
     };
 }

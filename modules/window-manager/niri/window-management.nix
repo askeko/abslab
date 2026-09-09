@@ -23,9 +23,9 @@
         #  width = 10000;
         #  active.color = "#00000055";
         #};
-        gaps = 16;
-        struts.left = 32;
-        struts.right = 32;
+        gaps = 8;
+        struts.left = 16;
+        struts.right = 16;
 
         always-center-single-column = true;
 

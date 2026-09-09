@@ -24,9 +24,12 @@
             height = 1440;
             refresh = 165.000;
           };
+          transform = {
+            rotation = 90;
+          };
           position = {
-            x = -2560;
-            y = 0;
+            x = -1440;
+            y = -450;
           };
         };
       };
