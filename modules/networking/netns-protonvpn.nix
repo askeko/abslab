@@ -1,14 +1,5 @@
 {
-  # Always-on network namespace that carries ProtonVPN's `wg-1-tor` tunnel for
-  # qBittorrent alone (split tunnel). The rest of the machine keeps using the
-  # normal network; only processes launched inside this namespace (qBittorrent
-  # + the qbittorrent-natpmp renewer) can reach the internet, and only via the
-  # tunnel — so if the tunnel drops they lose connectivity instead of leaking.
-  #
-  # The WireGuard interface is *created in the init namespace* and then *moved*
-  # into `protonvpn`: WireGuard fixes the encrypted UDP socket to the namespace
-  # the device was created in, so the ciphertext still egresses over the
-  # physical NIC / normal routing while cleartext apps live in the isolated ns.
+  # VPN split tunnel for qbittorrent
   #
   # The tunnel config is the sops-decrypted /etc/wireguard/wg-1-tor.conf (see
   # networking/wireguard.nix). `wg setconf` rejects wg-quick-only keys

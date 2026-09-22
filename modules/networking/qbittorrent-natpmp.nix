@@ -1,25 +1,10 @@
 {
-  # ProtonVPN forwards no inbound ports on a plain WireGuard tunnel, so
-  # qBittorrent shows as "unconnectable" on trackers. Proton's only inbound
-  # mechanism is NAT-PMP against the tunnel gateway (10.2.0.1), which hands out
-  # a *random* port on a 60s lease that must be renewed. This service renews the
-  # lease and pushes the assigned port into qBittorrent's live config via its
-  # Web API.
-  #
-  # This runs *inside* the `protonvpn` network namespace (see
-  # networking/netns-protonvpn.nix), sharing that namespace's tunnel and
-  # loopback with the qBittorrent GUI. So NAT-PMP against 10.2.0.1 goes over the
-  # tunnel, and 127.0.0.1:8080 reaches qBittorrent's Web UI in the same ns.
-  #
   # Prerequisites (one-time, not declarative because qBittorrent owns its conf):
   #   1. Connect to a Proton server that supports port forwarding (paid plans;
   #      e.g. the wg-1-tor config). Verify from inside the namespace with:
   #        sudo ip netns exec protonvpn natpmpc -a 1 0 udp 60 -g 10.2.0.1
   #   2. qBittorrent -> Options -> Web UI -> enable on 127.0.0.1:8080 and tick
   #      "Bypass authentication for clients on localhost".
-  # (The old "Network Interface = wg-*" bind and the firewall trustedInterfaces
-  # hack are no longer needed: the namespace has only the tunnel, so there is
-  # nothing to leak to and inbound never touches the host firewall.)
   flake.modules.nixos.pc =
     { pkgs, lib, ... }:
     let

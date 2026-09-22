@@ -1,18 +1,7 @@
 { config, ... }:
 {
-  # Launch the qBittorrent GUI *inside* the protonvpn network namespace (see
-  # networking/netns-protonvpn.nix) so its only route to the internet is the
-  # tunnel, while the rest of the desktop stays on the normal network. Network
-  # namespaces isolate only the network stack — the Wayland display, D-Bus and
-  # the filesystem are shared — so the GUI runs normally as the user.
-  #
-  # Entering a root-owned named namespace needs CAP_SYS_ADMIN, so the flow is:
-  #   user `qbittorrent` wrapper  ->  sudo (NOPASSWD, pinned command)
-  #     ->  root helper: `ip netns exec protonvpn`  (join the namespace)
-  #       ->  `setpriv` drops back to the invoking user  ->  real qBittorrent
-  # The GUI needs its session env (Wayland/D-Bus/etc.), which sudo strips, so the
-  # user wrapper forwards those vars as explicit args and the helper re-applies
-  # them with `env` after dropping privileges — no reliance on sudo env keeping.
+  # Launch the qBittorrent GUI inside the protonvpn network namespace (see
+  # networking/netns-protonvpn.nix)
   flake.modules.nixos.pc =
     { pkgs, lib, ... }:
     let
