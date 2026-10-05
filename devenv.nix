@@ -4,6 +4,6 @@
     just
     statix
     deadnix
-    nixfmt-rfc-style
+    nixfmt
   ];
 }

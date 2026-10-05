@@ -15,7 +15,22 @@
       };
 
       security.pam.services = {
-        hyprlock.u2fAuth = true;
+        # Password first, then touch. With u2f ahead of unix (the default
+        # order) hyprlock starts PAM the instant it locks — which on unplug is
+        # while the key is absent — so pam_u2f fails before you ever type, and
+        # the first password attempt is doomed. Running unix first defers the
+        # key check until after the password, by which point it's plugged back in.
+        #   unix requisite  → wrong password aborts without asking for a touch
+        #   u2f  sufficient → touch completes auth (a prior requisite failure
+        #                     can't be overridden), else fall through to deny
+        hyprlock = {
+          u2fAuth = true;
+          rules.auth.unix = {
+            control = lib.mkForce "requisite";
+            order = config.security.pam.services.hyprlock.rules.auth.u2f.order - 10;
+          };
+          rules.auth.u2f.control = lib.mkForce "sufficient";
+        };
         sudo.u2fAuth = lib.mkDefault false;
         su.u2fAuth = lib.mkDefault false;
         "su-l".u2fAuth = lib.mkDefault false;
@@ -36,9 +51,13 @@
 
       services.udev.packages = [ pkgs.yubikey-personalization ];
 
-      # Unplug the key and every session locks immediately.
+      # Unplug the key and every session locks immediately. Match only the
+      # usb_device node: each interface (OTP/FIDO/CCID) fires its own remove
+      # event, which spawned several racing hyprlock instances. Match on the
+      # kernel's PRODUCT (vid/pid/rev): the usb_id-derived ID_VENDOR_ID/ID_BUS
+      # aren't present on the usb_device remove event.
       services.udev.extraRules = ''
-        ACTION=="remove", ENV{ID_BUS}=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_VENDOR}=="Yubico", RUN+="${lib.getExe' pkgs.systemd "loginctl"} lock-sessions"
+        ACTION=="remove", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ENV{PRODUCT}=="1050/*", RUN+="${lib.getExe' pkgs.systemd "loginctl"} lock-sessions"
       '';
     };
 }

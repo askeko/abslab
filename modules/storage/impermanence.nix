@@ -58,6 +58,7 @@
           "/var/lib/systemd/rfkill"
           "/var/lib/bluetooth"
           "/var/lib/iwd"
+          "/var/lib/libvirt"
           "/var/db/sudo"
         ];
         files = [ "/etc/machine-id" ];

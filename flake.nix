@@ -6,6 +6,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    # Temporary pin for claude-code 2.1.280 (nixos-unstable is still on 2.1.278).
+    # Drop this input once the channel catches up - see modules/dev/ai.nix.
+    nixpkgs-claude-code.url = "github:NixOS/nixpkgs/5ee9f0ecf9ea4ef788544118d184a5d37baf5eee";
+
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
