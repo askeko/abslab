@@ -11,7 +11,8 @@
         inetutils
         socat
         wifite2
-        qbittorrent
+        # qbittorrent is provided system-wide (VPN-namespaced) by
+        # networking/qbittorrent-launcher.nix
       ];
     };
 }

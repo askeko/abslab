@@ -13,7 +13,10 @@
             ];
             text = ''
               active=$(ip -j -d link show | jq -r '[.[] | select(.linkinfo.info_kind == "wireguard")] | .[0].ifname // empty')
-              configs=$(find /etc/wireguard -maxdepth 1 -name '*.conf' -printf '%f\n' | sed 's/\.conf$//' | sort)
+              # wg-1-tor is owned by the always-on protonvpn split-tunnel
+              # namespace (networking/netns-protonvpn.nix), not a full-tunnel
+              # toggle — exclude it to avoid an interface-name collision.
+              configs=$(find /etc/wireguard -maxdepth 1 -name '*.conf' -printf '%f\n' | sed 's/\.conf$//' | grep -vx 'wg-1-tor' | sort)
 
               if [ -n "$active" ]; then
                 menu=$(printf "󰦞  Disconnect (%s)\n%s" "$active" "$configs")
