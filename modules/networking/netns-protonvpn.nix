@@ -63,6 +63,20 @@
               if $has6; then ip -n "$ns" -6 route add default dev "$iface"; fi
               ;;
             down)
+              # `ip netns del` only drops the name: any process still inside
+              # (qBittorrent) keeps the old ns and its wg-1-tor alive, which then
+              # fights the next `up` for the same WireGuard key. Stop them first.
+              mapfile -t pids < <(ip netns pids "$ns" 2>/dev/null || true)
+              if [ "''${#pids[@]}" -gt 0 ]; then
+                kill -TERM "''${pids[@]}" 2>/dev/null || true
+                for _ in $(seq 20); do
+                  [ -z "$(ip netns pids "$ns" 2>/dev/null)" ] && break
+                  sleep 0.5
+                done
+                mapfile -t pids < <(ip netns pids "$ns" 2>/dev/null || true)
+                [ "''${#pids[@]}" -gt 0 ] && kill -KILL "''${pids[@]}" 2>/dev/null || true
+              fi
+
               # Deleting the namespace also removes the interface it holds.
               ip netns del "$ns" 2>/dev/null || true
               ip link del "$iface" 2>/dev/null || true
@@ -77,6 +91,10 @@
         wantedBy = [ "multi-user.target" ];
         after = [ "network-online.target" ];
         wants = [ "network-online.target" ];
+        # Don't tear the tunnel down under a running qBittorrent on every
+        # `nixos-rebuild switch` that touches this script; it applies on reboot
+        # or a manual `systemctl restart netns-protonvpn`.
+        restartIfChanged = lib.mkDefault false;
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
