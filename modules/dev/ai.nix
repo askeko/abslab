@@ -1,33 +1,13 @@
-{
-  lib,
-  inputs,
-  config,
-  ...
-}:
-let
-  unfreePackages = config.nixpkgs.config.allowUnfreePackages;
-in
+{ lib, inputs, ... }:
 {
   flake.modules.homeManager.base =
     { pkgs, ... }:
-    let
-      # WARN:
-      # Temporary pin: nixos-unstable still ships claude-code 2.1.278, and
-      # Opus 5.5 needs 2.1.280+. Drop this (and the `nixpkgs-claude-code` flake
-      # input) once the channel has the bump.
-      pinned = import inputs.nixpkgs-claude-code {
-        inherit (pkgs.stdenv.hostPlatform) system;
-        config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) unfreePackages;
-      };
-    in
     {
       programs.claude-code = {
         enable = lib.mkDefault true;
-        package = lib.mkDefault pinned.claude-code;
+        # sadjow/claude-code-nix: updated hourly, unlike nixpkgs. The flake
+        # instantiates its own pkgs with allowUnfree, so no allowlist entry needed.
+        package = lib.mkDefault inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
       };
     };
-
-  nixpkgs.config.allowUnfreePackages = [
-    "claude-code"
-  ];
 }
