@@ -1,6 +1,11 @@
 {
   flake.modules.homeManager.gui =
-    { pkgs, lib, config, ... }:
+    {
+      pkgs,
+      lib,
+      config,
+      ...
+    }:
     let
       c = config.lib.stylix.colors.withHashtag;
       backlight = pkgs.writeShellApplication {

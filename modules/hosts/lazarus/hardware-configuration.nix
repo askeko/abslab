@@ -31,32 +31,51 @@
       fileSystems."/" = {
         device = "/dev/mapper/cryptroot";
         fsType = "btrfs";
-        options = [ "subvol=root" "compress=zstd" "noatime" ];
+        options = [
+          "subvol=root"
+          "compress=zstd"
+          "noatime"
+        ];
       };
 
       fileSystems."/nix" = {
         device = "/dev/mapper/cryptroot";
         fsType = "btrfs";
-        options = [ "subvol=nix" "compress=zstd" "noatime" ];
+        options = [
+          "subvol=nix"
+          "compress=zstd"
+          "noatime"
+        ];
       };
 
       fileSystems."/persist" = {
         device = "/dev/mapper/cryptroot";
         fsType = "btrfs";
         neededForBoot = true;
-        options = [ "subvol=persist" "compress=zstd" "noatime" ];
+        options = [
+          "subvol=persist"
+          "compress=zstd"
+          "noatime"
+        ];
       };
 
       fileSystems."/home" = {
         device = "/dev/mapper/cryptroot";
         fsType = "btrfs";
-        options = [ "subvol=home" "compress=zstd" "noatime" ];
+        options = [
+          "subvol=home"
+          "compress=zstd"
+          "noatime"
+        ];
       };
 
       fileSystems."/boot" = {
         device = "/dev/disk/by-partlabel/ESP";
         fsType = "vfat";
-        options = [ "fmask=0077" "dmask=0077" ];
+        options = [
+          "fmask=0077"
+          "dmask=0077"
+        ];
       };
 
       swapDevices = [ ];
