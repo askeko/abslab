@@ -8,7 +8,7 @@ keys:
   # One machine key per host. Generate on each host during install with:
   #   age-keygen -y /mnt/persist/var/lib/sops-nix/key.txt
   - &lazarus age12s357h6yln2jamfsxyd9heg8xmxyz0w72w3yvnrgmz4g368t2yssfy0myp
-  - &halflight age1tpuhu93ff60wev5ycp2guaer5hzpxh06phgp7d2y2eagz950nqask2vj34
+  - &halflight age1nr5d7h4pd40aam8p7j2happa4m69ank72ug9dqu4wqcquznzwqfslwxxw6
 
 creation_rules:
   # Every secrets/*.yaml is encrypted to you + both hosts.
