@@ -1,6 +1,9 @@
 # NixOS flake task runner
 # Usage: just <recipe>
 
+# sops reads the admin age key from Bitwarden via rbw instead of a key file
+export SOPS_AGE_KEY_CMD := env_var_or_default("SOPS_AGE_KEY_CMD", "rbw get 'sops admin key'")
+
 # List available recipes
 default:
     @just --list

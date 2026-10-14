@@ -5,5 +5,6 @@
     statix
     deadnix
     nixfmt
+    sops
   ];
 }
