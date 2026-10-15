@@ -2,7 +2,7 @@
   flake.modules.nixos.pc = {
 
     virtualisation.docker = {
-      enable = true; # DNS settings not fixed on eduroam yet
+      enable = true;
       daemon.settings = {
         default-address-pools = [
           {

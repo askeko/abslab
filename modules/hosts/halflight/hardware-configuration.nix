@@ -22,8 +22,6 @@
       boot.kernelModules = [ "kvm-amd" ];
       boot.extraModulePackages = [ ];
 
-      # FILL IN: UUID of the LUKS partition (the crypto_LUKS one, e.g. nvme0n1p2).
-      #   blkid | grep crypto_LUKS
       boot.initrd.luks.devices."cryptroot" = {
         device = "/dev/disk/by-partlabel/cryptroot";
         crypttabExtraOpts = [ "fido2-device=auto" ];
@@ -70,8 +68,6 @@
         ];
       };
 
-      # FILL IN: UUID of the ESP (the vfat boot partition, e.g. nvme0n1p1).
-      #   blkid | grep vfat
       fileSystems."/boot" = {
         device = "/dev/disk/by-partlabel/ESP";
         fsType = "vfat";

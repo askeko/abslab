@@ -9,7 +9,7 @@ let
 in
 {
   # Secrets tooling for the dev shell (justfile: secrets-edit, encrypt,
-  # vpn-add, wifi-add, updatekeys).
+  # vpn-add, updatekeys).
   perSystem =
     { pkgs, ... }:
     {

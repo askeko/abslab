@@ -37,12 +37,6 @@
         polkit-1.u2fAuth = lib.mkDefault false; # no touch on GUI auth prompts
       };
 
-      # SSH: pubkey auth bypasses the PAM auth stack, so u2f never applies there.
-      # Only matters for *password* SSH — a key can't be touched remotely. For
-      # "password + touch" over SSH use an ed25519-sk key + AuthenticationMethods
-      # instead. No-op until openssh is enabled.
-      security.pam.services.sshd.u2fAuth = lib.mkIf config.services.openssh.enable (lib.mkDefault false);
-
       environment.systemPackages = with pkgs; [
         yubikey-manager # `ykman` — set the FIDO2 PIN, inspect the key
         pam_u2f # `pamu2fcfg` — generate the U2F key mapping file

@@ -67,10 +67,6 @@
         "$shlvl"
         "$character"
       ];
-      fill = {
-        symbol = "─";
-        style = "bold";
-      };
       directory = {
         truncation_length = 0;
         format = "[ : $path]($style)[$read_only]($read_only_style) ";
