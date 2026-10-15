@@ -20,6 +20,10 @@
           imports = [ inputs.niri.homeModules.stylix ];
           programs.niri.package = pkgs.niri;
         };
+      # Stand-in for the host config that HM modules read via osConfig.
+      osConfigStub = {
+        sops.secrets."github/ssh-private-key".path = "/run/secrets/github/ssh-private-key";
+      };
       stylixStub = {
         stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
         stylix.polarity = "dark";
@@ -58,6 +62,7 @@
             value =
               {
                 inherit pkgs;
+                extraSpecialArgs.osConfig = osConfigStub;
                 modules = modules ++ [ { home.stateVersion = "26.05"; } ];
               }
               |> inputs.home-manager.lib.homeManagerConfiguration

@@ -40,12 +40,12 @@ in
               osConfig.sops.secrets."github/ssh-private-key".path
             } -o IdentitiesOnly=yes";
 
-            home.packages = with pkgs; [ gh-dash ];
+            programs.gh-dash.enable = true;
           };
         gui =
           { pkgs, ... }:
           {
-            home.packages = with pkgs; [ gh-markdown-preview ];
+            programs.gh.extensions = [ pkgs.gh-markdown-preview ];
           };
       };
     };

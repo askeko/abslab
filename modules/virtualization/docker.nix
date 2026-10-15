@@ -1,10 +1,10 @@
+{ lib, ... }:
 {
   flake.modules.nixos.pc = {
-
     virtualisation.docker = {
-      enable = true;
+      enable = lib.mkDefault true;
       daemon.settings = {
-        default-address-pools = [
+        default-address-pools = lib.mkDefault [
           {
             base = "10.200.0.0/16";
             size = 24;

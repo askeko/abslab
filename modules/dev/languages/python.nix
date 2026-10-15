@@ -9,7 +9,6 @@
         };
 
         extraPackages = with pkgs; [
-          lua-language-server
           pyright
           ruff
         ];

@@ -60,6 +60,7 @@
           "/var/lib/NetworkManager"
           "/etc/NetworkManager/system-connections"
           "/var/lib/libvirt"
+          "/var/lib/docker"
           "/var/db/sudo"
         ];
         files = [ "/etc/machine-id" ];

@@ -90,6 +90,27 @@ These rules are defined in `modules/docs/module-authoring.md` — read it for ex
 5. **Scripts** — inline if ~20 lines or fewer; otherwise put in a sibling `scripts/` directory and load with `pkgs.writeShellApplication` or `builtins.readFile`.
 6. **No `enable` guards** — never wrap `config = lib.mkIf cfg.enable { ... }` as the primary activation pattern.
 
+## Installing tools
+
+Pick the first that exists — verify by evaluating the option, don't assume:
+
+1. Home Manager module (`programs.<x>.enable`, or `programs.gh.extensions` for gh extensions)
+2. NixOS module (`programs.<x>`)
+3. Plain package (`home.packages` / `environment.systemPackages`)
+
+Exception: tools needing capabilities/setuid/groups (packet capture etc.) go through their
+NixOS module even if HM could install the binary — HM can't grant privileges (e.g. `programs.wireshark.package = pkgs.wireshark`, `programs.bandwhich`).
+
+Editor tooling for a language lives in `programs.lazyvim.extraPackages` in
+`modules/dev/languages/<lang>.nix`, and matches what the LazyVim extra actually calls
+(nix: `nil`, `statix`, `nixfmt` — same tools as `just lint` / `just fmt`).
+
+## Impermanence
+
+Both hosts wipe `/` on boot. A service that keeps state under `/var/lib` must have its
+directory added to the `environment.persistence."/persist"` list in
+`modules/storage/impermanence.nix` (e.g. `/var/lib/libvirt`, `/var/lib/docker`).
+
 ## Directory conventions
 
 ```
@@ -115,5 +136,6 @@ Stylix-based declarative theming controlled by `flake.meta.theme.scheme` / `flak
 ## Misc
 
 - Pipe operator `|>` is enabled globally via `nixConfig.extra-experimental-features`.
-- `flake-parts` modules system: see `modules/flake-parts.nix` and `modules/configurations/nixos.nix`.
+- **Dev shell** is make-shell under `perSystem` (`make-shells.default` in `modules/just.nix` + `security/sops.nix`), loaded by direnv via `.envrc` → `use flake`. devenv was removed — don't reintroduce it. The shellHook's `exec zsh` is skipped under direnv (`DIRENV_IN_ENVRC`); known limitation: `nix develop -c <cmd>` hangs in an interactive zsh (accepted).
+- **Evaluating changes**: flakes ignore untracked files, so test with `nix eval "path:$PWD#nixosConfigurations.<host>.config.system.build.toplevel.drvPath"` until the user has `git add`ed new files.- `flake-parts` modules system: see `modules/flake-parts.nix` and `modules/configurations/nixos.nix`.
 - `modules/docs/dendritic-core.md` and `modules/docs/module-authoring.md` are the canonical pattern references — read them before authoring new modules.

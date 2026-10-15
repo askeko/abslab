@@ -8,7 +8,6 @@
         nix-tree
         nvd
         nix-diff
-        devenv
       ];
 
       programs.nh.enable = true;
