@@ -22,5 +22,8 @@
           };
         };
       };
+
+      # After Noctalia, so its tray is there for udiskie's icon.
+      systemd.user.services.udiskie.Unit.After = [ "noctalia.service" ];
     };
 }

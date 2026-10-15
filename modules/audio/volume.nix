@@ -1,44 +1,48 @@
 { lib, ... }:
 {
   flake.modules.homeManager.gui =
-    { pkgs, ... }:
+    hmArgs:
     let
-      step = 5;
-      pactl = lib.getExe' pkgs.pulseaudio "pactl";
+      msg =
+        args:
+        [
+          (lib.getExe hmArgs.config.programs.noctalia.package)
+          "msg"
+        ]
+        ++ args;
 
-      incVolArgs = d: [
-        pactl
-        "set-sink-volume"
-        "@DEFAULT_SINK@"
-        "${d}${toString step}%"
-      ];
-      muteVolArgs = [
-        pactl
-        "set-sink-mute"
-        "@DEFAULT_SINK@"
-        "toggle"
-      ];
-
+      # Fn keys stay usable on the lock screen
+      locked = args: {
+        action.spawn = msg args;
+        allow-when-locked = true;
+      };
     in
     {
       programs.niri.settings.binds = {
-        # Fn keys stay usable on the lock screen
-        "XF86AudioLowerVolume" = {
-          action.spawn = incVolArgs "-";
-          allow-when-locked = true;
-        };
-        "XF86AudioRaiseVolume" = {
-          action.spawn = incVolArgs "+";
-          allow-when-locked = true;
-        };
-        "XF86AudioMute" = {
-          action.spawn = muteVolArgs;
-          allow-when-locked = true;
-        };
+        "XF86AudioLowerVolume" = locked [ "volume-down" ];
+        "XF86AudioRaiseVolume" = locked [ "volume-up" ];
+        "XF86AudioMute" = locked [ "volume-mute" ];
 
-        "Mod+Shift+Minus".action.spawn = incVolArgs "-";
-        "Mod+Shift+Plus".action.spawn = incVolArgs "+";
-        "Mod+Shift+M".action.spawn = muteVolArgs;
+        "Mod+Shift+Minus".action.spawn = msg [ "volume-down" ];
+        "Mod+Shift+Plus".action.spawn = msg [ "volume-up" ];
+        "Mod+Shift+M".action.spawn = msg [ "volume-mute" ];
+
+        "XF86AudioPlay" = locked [
+          "media"
+          "toggle"
+        ];
+        "XF86AudioPause" = locked [
+          "media"
+          "toggle"
+        ];
+        "XF86AudioNext" = locked [
+          "media"
+          "next"
+        ];
+        "XF86AudioPrev" = locked [
+          "media"
+          "previous"
+        ];
       };
     };
 }

@@ -15,7 +15,9 @@ All `.nix` files under `modules/` are auto-loaded by `import-tree ./modules` —
 Hosts: `lazarus` (desktop, inherits `pc`), `halflight` (laptop, inherits `laptop → pc`).
 Owner username: `absentia`. Home directory: `/home/absentia`.
 
-Compositor: **niri** (scrollable tiling, via the `niri-flake` input with the nixpkgs niri package) — Hyprland was removed in the niri migration; don't reintroduce it. **hyprlock + hypridle stay** (both compositor-agnostic: ext-session-lock / ext-idle-notify), so `hyprlock`/`hypridle` references in `screenlock.nix`, `idle.nix`, `yubikey.nix`, and `theme.nix` are intentional. Binds live in `programs.niri.settings.binds`, spread across feature modules (dendritic style); compositor-level config is in `modules/window-manager/niri/`.
+Compositor: **niri** (scrollable tiling, via the `niri-flake` input with the nixpkgs niri package). Binds live in `programs.niri.settings.binds`, spread across feature modules (dendritic style); compositor-level config is in `modules/window-manager/niri/`.
+
+Desktop shell: **Noctalia v5** (HM `programs.noctalia`, systemd user service) — bar, launcher, notifications, lock screen, idle, wallpaper, clipboard history, OSD, screenshots and the polkit agent. Its TOML settings (`programs.noctalia.settings`) are spread across feature modules like the binds (core in `window-manager/noctalia.nix`, bar in `bar.nix`, idle/lock/wallpaper/notifications in their own files) and validated at build time; binds call `noctalia msg …`. The lock screen authenticates against the `login` PAM service (YubiKey rules in `security/yubikey.nix`). The configuration mirrors the Arch setup in `~/projects/arch` (absrice `noctalia/config.toml.tmpl`).
 
 ## Module system
 
@@ -36,6 +38,13 @@ Compositor: **niri** (scrollable tiling, via the `niri-flake` input with the nix
 - `laptop` NixOS module → loads `homeManager.laptop`
 
 To add a new HM module to all desktop hosts, add it to `pc` in that file (or create a new NixOS module key and import it in host imports).
+
+`modules/home-manager/checks.nix` also builds `base`/`gui`/`laptop` as standalone HM
+flake checks (no host), using stubs for Stylix, niri and `osConfig`. When an HM module
+reads a new `osConfig.<path>`, add that path to `osConfigStub` there — otherwise the
+checks fail with `expected a set but found null`. Optional reads that should fall back
+(theme polarity in `style/lazyvim.nix`, `niri/theme-toggle.nix`) use `osConfig ? null`
+and must stay absent from the stub.
 
 ### Module keys
 
@@ -116,7 +125,7 @@ directory added to the `environment.persistence."/persist"` list in
 ```
 modules/
   style/        ← visual theming (fonts live here; new theme modules go here)
-  window-manager/ ← compositor, wallpaper, cursor, waybar, etc.
+  window-manager/ ← compositor, Noctalia shell (bar, idle, lock, wallpaper), etc.
   hosts/<name>/ ← per-host files (imports, monitors, hardware, etc.)
   home-manager/ ← HM wiring into NixOS
   docs/         ← authoritative pattern docs (read-only reference)
@@ -129,7 +138,8 @@ Stylix-based declarative theming controlled by `flake.meta.theme.scheme` / `flak
 - **Stylix is a flake input** (`inputs.stylix`); the NixOS module is imported in `theme.nix`.
 - **`modules/style/theme.nix`** holds the Stylix wiring and the `flake.meta.theme.schemes` registry (one entry feeds both Stylix's base16 scheme and LazyVim); it augments the existing `nixos.pc` and `homeManager.gui` namespaces — no new module keys.
 - **`modules/style/fonts.nix`** completes the fontconfig fallback chain (Symbols NF Mono → DejaVu Sans Mono → Noto Color Emoji) so kitty/etc. render dingbats/arrows/emoji — do **not** reintroduce a kitty `symbol_map`.
-- **`modules/window-manager/wallpaper.nix`** uses **awww** (the maintained swww fork; HM module `services.awww`, unit and CLI both named `awww`): rofi `wallpaper-picker` + `wallpaper-restore`, and maintains a `~/.local/state/theme/current-wallpaper` symlink that hyprlock reads so the lock screen follows the live wallpaper.
+- **`modules/window-manager/wallpaper.nix`** points Noctalia's wallpaper panel (`Mod+B`) at `flake.meta.theme.wallpaper.path`; Noctalia also draws the lock-screen background.
+- Stylix's `noctalia` target is disabled: Noctalia uses its builtin Tokyo-Night palette.
 - Theme options live under `flake.meta.theme.*` (consistent with `flake.meta.fonts`), not a new `my.*` namespace.
 - **Discord stays the official client** (not Vesktop): Vesktop's Electron 40 breaks per-window screenshare. Don't re-attempt the swap.
 

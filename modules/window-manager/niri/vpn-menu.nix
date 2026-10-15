@@ -53,5 +53,12 @@
     in
     {
       programs.niri.settings.binds."Mod+Shift+V".action.spawn = lib.getExe vpn-menu;
+
+      programs.noctalia.settings.widget.vpn = {
+        type = lib.mkDefault "custom_button";
+        glyph = lib.mkDefault "shield-lock";
+        tooltip = lib.mkDefault "VPN menu";
+        actions.left = lib.mkDefault "exec ${lib.getExe vpn-menu}";
+      };
     };
 }

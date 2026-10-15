@@ -75,9 +75,10 @@
         in
         {
           "Mod+D".action.spawn = [
-            rofi
-            "-show"
-            "drun"
+            (lib.getExe hmArgs.config.programs.noctalia.package)
+            "msg"
+            "panel-toggle"
+            "launcher"
           ];
           "Mod+Shift+D".action.spawn = [
             rofi

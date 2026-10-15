@@ -27,6 +27,12 @@
     {
       home.packages = [ toggle-mute-sources ];
 
-      programs.niri.settings.binds."Mod+Z".action.spawn = lib.getExe toggle-mute-sources;
+      programs.niri.settings.binds = {
+        "Mod+Z".action.spawn = lib.getExe toggle-mute-sources;
+        "XF86AudioMicMute" = {
+          action.spawn = lib.getExe toggle-mute-sources;
+          allow-when-locked = true;
+        };
+      };
     };
 }

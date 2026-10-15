@@ -147,9 +147,8 @@ in
             enableReleaseChecks = false;
 
             targets = {
-              waybar.enable = false; # palette vars in waybar.nix
               neovim.enable = false; # LazyVim manages its own colorscheme
-              hyprlock.enable = false; # background/colors managed in screenlock.nix
+              noctalia.enable = false; # Noctalia uses its builtin Tokyo-Night
               firefox.profileNames = [ "primary" ];
               firefox.firefoxGnomeTheme.enable = true;
             };
@@ -168,7 +167,7 @@ in
 
         # Slight terminal translucency
         opacity.terminal = lib.mkDefault 0.9;
-        # The live desktop wallpaper is managed by awww (window-manager/wallpaper.nix)
+        # The live desktop wallpaper is managed by Noctalia (window-manager/wallpaper.nix)
         # from ~/pictures, which a flake's pure eval can't reference. Stylix still requires
         # an image, so feed it a solid pixel generated from the active scheme's background
         # colour - it tracks scheme/mode automatically instead of pinning catppuccin.
