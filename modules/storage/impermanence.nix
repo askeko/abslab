@@ -57,7 +57,8 @@
           "/var/lib/systemd/coredump"
           "/var/lib/systemd/rfkill"
           "/var/lib/bluetooth"
-          "/var/lib/iwd"
+          "/var/lib/NetworkManager"
+          "/etc/NetworkManager/system-connections"
           "/var/lib/libvirt"
           "/var/db/sudo"
         ];

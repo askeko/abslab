@@ -22,7 +22,6 @@ Two storage patterns:
   | Directory            | Decrypted to        | Used by                          |
   | -------------------- | ------------------- | -------------------------------- |
   | `secrets/wireguard/` | `/etc/wireguard/`   | `wg-quick` via the rofi VPN menu |
-  | `secrets/iwd/`       | `/var/lib/iwd/`     | iwd Wi-Fi profiles               |
 
 Remember to `git add` new secret files — flakes only see tracked files. Never
 commit a plaintext secret: encrypt first (`sops filestatus <file>` shows the
@@ -43,7 +42,6 @@ which provides `just`, `sops`, `age` and the lint/format tools.
 | `just secrets-edit`   | Edit `secrets/secrets.yaml`                                |
 | `just encrypt <file>` | Encrypt a secret file in place; refuses to double-encrypt |
 | `just vpn-add <file>` | Import a WireGuard config into `secrets/wireguard/` (name ≤ 15 chars) |
-| `just wifi-add <ssid>`| Create + encrypt an iwd Wi-Fi profile; prompts for the passphrase |
 | `just updatekeys`     | Re-encrypt every secret to the current `.sops.yaml` recipients |
 
 ## Installation
@@ -200,7 +198,7 @@ sudo chmod 600 /mnt/persist/var/lib/sops-nix/key.txt
 
 Add the recipient to `.sops.yaml`, then re-encrypt **all** secret files with
 the admin key (`secrets.yaml` plus the whole-file secrets under
-`secrets/wireguard/` and `secrets/iwd/`):
+`secrets/wireguard/`):
 
 ```sh
 SOPS_AGE_KEY_FILE=<admin-key>.txt just updatekeys

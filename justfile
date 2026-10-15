@@ -60,21 +60,6 @@ vpn-add file:
     sops -e -i "secrets/wireguard/$base"
     echo "imported secrets/wireguard/$base — remember to git add it"
 
-# Create + encrypt an iwd Wi-Fi profile (prompts for the passphrase)
-wifi-add ssid:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    read -rsp 'Wi-Fi passphrase: ' pass; echo
-    if [[ "{{ ssid }}" =~ ^[A-Za-z0-9_-]+$ ]]; then
-        name="{{ ssid }}"
-    else
-        name="=$(printf %s "{{ ssid }}" | od -A n -t x1 | tr -d ' \n')"
-    fi
-    mkdir -p secrets/iwd
-    printf '[Security]\nPassphrase=%s\n' "$pass" > "secrets/iwd/$name.psk"
-    sops -e -i "secrets/iwd/$name.psk"
-    echo "created secrets/iwd/$name.psk — remember to git add it"
-
 # Re-encrypt every secret to the current .sops.yaml recipients
 updatekeys:
     find secrets -type f \( -name '*.yaml' -o -name '*.conf' -o -name '*.psk' \) \
