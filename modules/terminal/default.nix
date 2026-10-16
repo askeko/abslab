@@ -11,6 +11,8 @@
       };
     };
     config = {
+      home.sessionVariables.TERMINAL = hmArgs.config.terminal.path;
+
       xdg.terminal-exec = {
         enable = true;
         settings.default = [ hmArgs.config.terminal.desktopFileId ];

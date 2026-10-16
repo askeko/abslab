@@ -7,7 +7,11 @@
         name = config.flake.meta.owner.name;
       };
       init.defaultBranch = "main";
-      push.default = "current";
+      push = {
+        default = "current";
+        # The first push of a new branch sets its upstream.
+        autoSetupRemote = true;
+      };
       commit.verbose = true;
       branch.sort = "-committerdate";
       tag.sort = "taggerdate";

@@ -1,6 +1,8 @@
 { lib, ... }:
 {
   flake.modules.homeManager.gui = hmArgs: {
+    home.sessionVariables.BROWSER = lib.getExe hmArgs.config.programs.firefox.package;
+
     programs.firefox = {
       configPath = "${hmArgs.config.xdg.configHome}/mozilla/firefox";
       enable = true;

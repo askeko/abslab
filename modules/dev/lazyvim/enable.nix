@@ -7,7 +7,13 @@
       enable = true;
     };
 
-    home.sessionVariables.EDITOR = "nvim";
-    home.shellAliases.vim = "nvim";
+    home.sessionVariables = {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+    };
+    home.shellAliases = {
+      vim = "nvim";
+      vimdiff = "nvim -d";
+    };
   };
 }
