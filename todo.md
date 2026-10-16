@@ -78,3 +78,9 @@ Themable programs
 
 - Plymouth
 - Tuigreet / greetd
+
+# After the Arch migration
+
+- Move off rofi: rofi-rbw (Mod+M → Noctalia launcher entry, e.g. /pass that
+  types the password with wtype), pinentry-rofi (rbw unlock), rofimoji
+  (Mod+Shift+U, all characters).

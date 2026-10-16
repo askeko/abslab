@@ -5,7 +5,7 @@
       vpn-menu = pkgs.writeShellApplication {
         name = "vpn-menu";
         runtimeInputs = [
-          hmArgs.config.programs.rofi.package
+          hmArgs.config.programs.noctalia.package
           pkgs.wireguard-tools
           pkgs.iproute2
           pkgs.jq
@@ -24,7 +24,7 @@
             menu="$configs"
           fi
 
-          choice=$(printf "%s\n" "$menu" | rofi -dmenu -p 'VPN: ')
+          choice=$(printf "%s\n" "$menu" | noctalia dmenu -p VPN)
 
           notify() {
             notify-send -a VPN -i network-vpn "$1" "''${2:-}"
@@ -52,7 +52,9 @@
       };
     in
     {
-      programs.niri.settings.binds."Mod+Shift+V".action.spawn = lib.getExe vpn-menu;
+      wayland.windowManager.hyprland.extraConfig = ''
+        bind(mod .. " + SHIFT + V", app("${lib.getExe vpn-menu}"), "VPN menu")
+      '';
 
       programs.noctalia.settings.widget.vpn = {
         type = lib.mkDefault "custom_button";

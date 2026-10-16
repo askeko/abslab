@@ -9,7 +9,7 @@
           [
             (lib.getExe pkgs.tuigreet)
             "--cmd"
-            (lib.getExe' nixosArgs.config.programs.niri.package "niri-session")
+            "'${lib.getExe nixosArgs.config.programs.uwsm.package} start hyprland-uwsm.desktop'"
             "--remember"
           ]
           |> lib.concatStringsSep " ";

@@ -149,6 +149,7 @@ in
             targets = {
               neovim.enable = false; # LazyVim manages its own colorscheme
               noctalia.enable = false; # Noctalia uses its builtin Tokyo-Night
+              hyprland.enable = false; # hyprlang settings; borders set in hyprland/look.nix
               firefox.profileNames = [ "primary" ];
               firefox.firefoxGnomeTheme.enable = true;
             };

@@ -86,6 +86,8 @@ in
     {
       home.file.${stateRel}.text = mode;
 
-      programs.niri.settings.binds."Mod+Shift+S".action.spawn = lib.getExe theme-toggle;
+      wayland.windowManager.hyprland.extraConfig = ''
+        bind(mod .. " + SHIFT + S", cmd("${lib.getExe theme-toggle}"), "Toggle light/dark theme")
+      '';
     };
 }

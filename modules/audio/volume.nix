@@ -1,48 +1,19 @@
-{ lib, ... }:
 {
-  flake.modules.homeManager.gui =
-    hmArgs:
-    let
-      msg =
-        args:
-        [
-          (lib.getExe hmArgs.config.programs.noctalia.package)
-          "msg"
-        ]
-        ++ args;
+  # Through Noctalia, for its OSD. Fn keys also work on the lock screen.
+  flake.modules.homeManager.gui.wayland.windowManager.hyprland.extraConfig = ''
+    local hw = { locked = true, repeating = true }
 
-      # Fn keys stay usable on the lock screen
-      locked = args: {
-        action.spawn = msg args;
-        allow-when-locked = true;
-      };
-    in
-    {
-      programs.niri.settings.binds = {
-        "XF86AudioLowerVolume" = locked [ "volume-down" ];
-        "XF86AudioRaiseVolume" = locked [ "volume-up" ];
-        "XF86AudioMute" = locked [ "volume-mute" ];
+    bind(mod .. " + SHIFT + equal", cmd(ipc .. "volume-up"), "Volume up", { repeating = true })
+    bind(mod .. " + SHIFT + plus", cmd(ipc .. "volume-up"), "Volume up", { repeating = true })
+    bind(mod .. " + SHIFT + minus", cmd(ipc .. "volume-down"), "Volume down", { repeating = true })
+    bind(mod .. " + SHIFT + M", cmd(ipc .. "volume-mute"), "Mute output")
+    bind("XF86AudioRaiseVolume", cmd(ipc .. "volume-up"), "Volume up", hw)
+    bind("XF86AudioLowerVolume", cmd(ipc .. "volume-down"), "Volume down", hw)
+    bind("XF86AudioMute", cmd(ipc .. "volume-mute"), "Mute output", { locked = true })
 
-        "Mod+Shift+Minus".action.spawn = msg [ "volume-down" ];
-        "Mod+Shift+Plus".action.spawn = msg [ "volume-up" ];
-        "Mod+Shift+M".action.spawn = msg [ "volume-mute" ];
-
-        "XF86AudioPlay" = locked [
-          "media"
-          "toggle"
-        ];
-        "XF86AudioPause" = locked [
-          "media"
-          "toggle"
-        ];
-        "XF86AudioNext" = locked [
-          "media"
-          "next"
-        ];
-        "XF86AudioPrev" = locked [
-          "media"
-          "previous"
-        ];
-      };
-    };
+    bind("XF86AudioPlay", cmd(ipc .. "media toggle"), "Play/pause", { locked = true })
+    bind("XF86AudioPause", cmd(ipc .. "media toggle"), "Play/pause", { locked = true })
+    bind("XF86AudioNext", cmd(ipc .. "media next"), "Next track", { locked = true })
+    bind("XF86AudioPrev", cmd(ipc .. "media previous"), "Previous track", { locked = true })
+  '';
 }

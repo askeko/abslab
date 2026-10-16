@@ -1,26 +1,16 @@
 { lib, ... }:
 {
   flake.modules.homeManager.gui =
-    hmArgs@{ pkgs, ... }:
+    { pkgs, ... }:
     let
       inherit (pkgs) rofimoji;
     in
     {
       home.packages = [ rofimoji ];
 
-      programs.niri.settings.binds = {
-        "Mod+U".action.spawn = [
-          (lib.getExe hmArgs.config.programs.noctalia.package)
-          "msg"
-          "panel-toggle"
-          "launcher"
-          "/emo"
-        ];
-        "Mod+Shift+U".action.spawn = [
-          (lib.getExe rofimoji)
-          "--files"
-          "all"
-        ];
-      };
+      wayland.windowManager.hyprland.extraConfig = ''
+        bind(mod .. " + U", cmd(ipc .. "panel-toggle launcher /emo"), "Emoji picker")
+        bind(mod .. " + SHIFT + U", app("${lib.getExe rofimoji} --files all"), "Character picker")
+      '';
     };
 }

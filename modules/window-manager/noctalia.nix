@@ -4,8 +4,6 @@
     # Battery and power devices in the bar.
     services.upower.enable = lib.mkDefault true;
 
-    # niri-flake starts its own polkit agent; Noctalia's replaces it.
-    systemd.user.services.niri-flake-polkit.enable = lib.mkDefault false;
   };
 
   flake.modules.homeManager.gui =
@@ -55,30 +53,43 @@
           XDG_SESSION_ID=$(${lib.getExe' pkgs.systemd "loginctl"} show-user "$(${lib.getExe' pkgs.coreutils "id"} -un)" -p Display --value) exec ${noctalia}
         ''}";
 
-      programs.niri.settings.binds = {
-        "Mod+S".action.spawn = [
-          noctalia
-          "msg"
-          "panel-toggle"
-          "control-center"
-        ];
-        "Mod+Apostrophe".action.spawn = [
-          noctalia
-          "msg"
-          "settings-toggle"
-        ];
-        "Mod+Shift+Q".action.spawn = [
-          noctalia
-          "msg"
-          "panel-toggle"
-          "session"
-        ];
-        "Alt+Tab".action.spawn = [
-          noctalia
-          "msg"
-          "window-switcher"
-          "hold"
-        ];
+      wayland.windowManager.hyprland = {
+        # Noctalia (bar, launcher, notifications, lock screen) is controlled by
+        # messages: binds use cmd(ipc .. "<command>").
+        settings = {
+          ipc._var = "${noctalia} msg ";
+
+          # Noctalia's settings window floats.
+          window_rule = [
+            {
+              match.class = "dev.noctalia.Noctalia";
+              float = true;
+              size = [
+                1080
+                920
+              ];
+            }
+          ];
+
+          # No Hyprland animations on Noctalia's own surfaces (bar, panels, OSD).
+          layer_rule = [
+            {
+              name = "noctalia";
+              match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$";
+              no_anim = true;
+              ignore_alpha = 0.5;
+              blur = true;
+              blur_popups = true;
+            }
+          ];
+        };
+
+        extraConfig = ''
+          bind(mod .. " + S", cmd(ipc .. "panel-toggle control-center"), "Show Noctalia control center")
+          bind(mod .. " + apostrophe", cmd(ipc .. "settings-toggle"), "Show settings menu")
+          bind(mod .. " + SHIFT + Q", cmd(ipc .. "panel-toggle session"), "Power menu")
+          bind("ALT + Tab", cmd(ipc .. "window-switcher hold"), "Window switcher")
+        '';
       };
     };
 }

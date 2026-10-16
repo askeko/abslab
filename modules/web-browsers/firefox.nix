@@ -26,8 +26,9 @@
       };
     };
 
-    programs.niri.settings.binds."Mod+W".action.spawn =
-      lib.getExe hmArgs.config.programs.firefox.package;
+    wayland.windowManager.hyprland.extraConfig = ''
+      bind(mod .. " + W", app("${lib.getExe hmArgs.config.programs.firefox.package}"), "Browser")
+    '';
 
     xdg.mimeApps.defaultApplications =
       [

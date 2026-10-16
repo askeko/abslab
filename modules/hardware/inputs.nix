@@ -1,20 +1,22 @@
+{ lib, ... }:
 {
-  flake.modules.homeManager.gui = {
-    # Cursor theme/size come from the stylix target.
-    programs.niri.settings = {
-      input = {
-        focus-follows-mouse.enable = true;
-        touchpad = {
-          natural-scroll = true;
-          tap = true;
-          accel-profile = "flat";
+  flake.modules.homeManager.gui.wayland.windowManager.hyprland.settings.config =
+    lib.mapAttrsRecursive (_: lib.mkDefault)
+      {
+        input = {
+          # Default for every keyboard; hosts override it per device.
+          kb_layout = "eu";
+
+          follow_mouse = 1;
+          accel_profile = "flat";
+          sensitivity = 0.2;
+
+          touchpad = {
+            natural_scroll = true;
+            tap_to_click = true;
+          };
         };
-        mouse = {
-          accel-profile = "flat";
-          accel-speed = 0.2;
-        };
+
+        cursor.inactive_timeout = 2; # seconds
       };
-      cursor.hide-after-inactive-ms = 2000;
-    };
-  };
 }

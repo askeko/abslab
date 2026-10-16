@@ -1,38 +1,57 @@
-{ config, ... }:
+{ config, lib, ... }:
+let
+  samsung = "desc:Samsung Electric Company Odyssey G85SB";
+  acer = "desc:Acer Technologies XB271HU";
+in
 {
   configurations.nixos.lazarus.module = {
-    home-manager.users.${config.flake.meta.owner.username} = {
-      # No HDR/bitdepth under niri (HDR output is disabled upstream) — the
-      # Samsung runs SDR, which also removes the hyprlock HDR-crash class.
-      # Workspaces are dynamic per-monitor; no pinning equivalent needed.
-      programs.niri.settings.outputs = {
-        "Samsung Electric Company Odyssey G85SB H1AK500000" = {
-          mode = {
-            width = 3440;
-            height = 1440;
-            refresh = 174.962;
-          };
-          position = {
-            x = 0;
-            y = 0;
-          };
-          focus-at-startup = true;
-        };
-        "Acer Technologies XB271HU #ASOehCXoFYrd" = {
-          mode = {
-            width = 2560;
-            height = 1440;
-            refresh = 165.000;
-          };
-          transform = {
-            rotation = 90;
-          };
-          position = {
-            x = -1440;
-            y = -450;
-          };
-        };
+    # Monitors match by description prefix (make + model, see `hyprctl
+    # monitors`), so the serial number doesn't matter. The Acer is rotated to
+    # portrait on the Samsung's left.
+    home-manager.users.${config.flake.meta.owner.username}.wayland.windowManager.hyprland = {
+      settings = {
+        monitor = [
+          {
+            output = samsung;
+            mode = "3440x1440@174.96";
+            position = "0x0";
+            scale = 1;
+          }
+          {
+            output = acer;
+            mode = "2560x1440@165";
+            position = "-1440x-450";
+            scale = 1;
+            transform = 1; # 90°
+          }
+        ];
+
+        # Workspaces 1-5 on the Samsung, 6-10 on the Acer.
+        workspace_rule = lib.genList (
+          i:
+          let
+            ws = i + 1;
+          in
+          {
+            workspace = toString ws;
+            persistent = true;
+            default_name = "󰣇";
+            monitor = if ws <= 5 then samsung else acer;
+            default = ws == 1 || ws == 6;
+          }
+        ) 10;
       };
+
+      extraConfig = ''
+        -- Start on the Samsung when it's connected.
+        hl.on("hyprland.start", function()
+            for _, mon in ipairs(hl.get_monitors()) do
+                if mon.description:find("${lib.removePrefix "desc:" samsung}", 1, true) == 1 then
+                    hl.dispatch(hl.dsp.focus({ monitor = mon }))
+                end
+            end
+        end)
+      '';
     };
   };
 }

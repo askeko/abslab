@@ -3,41 +3,24 @@
   flake.modules.homeManager.gui =
     hmArgs@{ pkgs, ... }:
     let
-      satty = lib.getExe hmArgs.config.programs.satty.package;
-      noctalia = lib.getExe hmArgs.config.programs.noctalia.package;
-
-      # grim can't capture a single window on niri; the compositor action
-      # saves the focused window to disk + clipboard, and satty edits the
-      # clipboard copy (cleared first so a stale image can't sneak in).
-      screenshot-window-edit = pkgs.writeShellApplication {
-        name = "screenshot-window-edit";
+      # Region, monitor and annotate shots are Noctalia's; the focused window
+      # is cut out of a grim capture and opened in satty.
+      screenshot-window = pkgs.writeShellApplication {
+        name = "screenshot-window";
         runtimeInputs = [
-          pkgs.wl-clipboard-rs
-          hmArgs.config.programs.niri.package
-          pkgs.coreutils
+          pkgs.hyprland
+          pkgs.jq
+          pkgs.grim
+          hmArgs.config.programs.satty.package
         ];
         text = ''
-          tmp=$(mktemp --suffix .png)
-          trap 'rm -f "$tmp"' EXIT
-          wl-copy --clear
-          niri msg action screenshot-window
-          for _ in $(seq 20); do
-            if wl-paste --type image/png > "$tmp" 2>/dev/null && [ -s "$tmp" ]; then
-              ${satty} --filename "$tmp"
-              exit 0
-            fi
-            sleep 0.1
-          done
-          echo "screenshot never arrived on the clipboard" >&2
-          exit 1
+          geometry=$(hyprctl -j activewindow | jq -r 'if .at then "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])" else empty end')
+          [ -n "$geometry" ] || exit 1
+          grim -g "$geometry" - | satty --filename -
         '';
       };
     in
     {
-      home.packages = [
-        hmArgs.config.programs.satty.package
-      ];
-
       programs = {
         satty = {
           enable = true;
@@ -55,29 +38,13 @@
           save_to_file = lib.mkDefault false;
           copy_to_clipboard = lib.mkDefault true;
         };
-
-        niri.settings = {
-          # Same directory + naming as satty's output-filename.
-          screenshot-path = "${hmArgs.config.xdg.userDirs.desktop}/screenshot-%Y-%m-%d_%H:%M:%S.png";
-          binds = {
-            "Mod+Shift+W".action.spawn = lib.getExe screenshot-window-edit;
-            "Mod+Shift+O".action.spawn = [
-              noctalia
-              "msg"
-              "screenshot-fullscreen"
-            ];
-            "Mod+Shift+R".action.spawn = [
-              noctalia
-              "msg"
-              "screenshot-annotate"
-            ];
-            "Print".action.spawn = [
-              noctalia
-              "msg"
-              "screenshot-region"
-            ];
-          };
-        };
       };
+
+      wayland.windowManager.hyprland.extraConfig = ''
+        bind("Print", cmd(ipc .. "screenshot-region"), "Screenshot area to clipboard")
+        bind(mod .. " + SHIFT + R", cmd(ipc .. "screenshot-annotate"), "Screenshot area, edit")
+        bind(mod .. " + SHIFT + O", cmd(ipc .. "screenshot-fullscreen"), "Screenshot monitor")
+        bind(mod .. " + SHIFT + W", app("${lib.getExe screenshot-window}"), "Screenshot window, edit")
+      '';
     };
 }

@@ -15,7 +15,9 @@
         enable = true;
         settings.default = [ hmArgs.config.terminal.desktopFileId ];
       };
-      programs.niri.settings.binds."Mod+Return".action.spawn = "${hmArgs.config.terminal.path}";
+      wayland.windowManager.hyprland.extraConfig = ''
+        bind(mod .. " + Return", app("${hmArgs.config.terminal.path}"), "Terminal")
+      '';
     };
   };
 }

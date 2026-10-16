@@ -10,6 +10,8 @@
       xdg.configFile."rofi-rbw.rc".text = lib.generators.toINIWithGlobalSection { } {
         globalSection = { };
       };
-      programs.niri.settings.binds."Mod+M".action.spawn = lib.getExe package;
+      wayland.windowManager.hyprland.extraConfig = ''
+        bind(mod .. " + M", app("${lib.getExe package}"), "Passwords")
+      '';
     };
 }
