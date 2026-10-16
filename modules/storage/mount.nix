@@ -2,6 +2,8 @@
 {
   flake.modules.nixos.pc = {
     services.udisks2.enable = true;
+    # exFAT drives (adds exfatprogs); FAT is already supported for the ESP.
+    boot.supportedFilesystems.exfat = lib.mkDefault true;
   };
 
   flake.modules.homeManager.gui =

@@ -18,8 +18,9 @@
       ];
     in
     {
-      home.packages = [
-        pkgs.ouch
+      home.packages = with pkgs; [
+        ouch
+        zip
       ];
 
       programs.yazi = {

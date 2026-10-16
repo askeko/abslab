@@ -21,6 +21,11 @@
         [
           "image/png"
           "image/jpeg"
+          "image/gif"
+          "image/webp"
+          "image/bmp"
+          "image/tiff"
+          "image/svg+xml"
         ]
         |> map (lib.flip lib.nameValuePair [ "imv.desktop" ])
         |> lib.listToAttrs;
