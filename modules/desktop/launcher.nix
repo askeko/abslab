@@ -1,7 +1,7 @@
 { lib, ... }:
 {
   flake.modules.homeManager.gui =
-    hmArgs@{ ... }:
+    hmArgs:
     let
       mkLiteral = hmArgs.config.lib.formats.rasi.mkLiteral;
     in

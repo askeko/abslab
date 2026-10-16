@@ -20,9 +20,9 @@ test:
 build:
     nh os build .
 
-# Run linters (statix, deadnix)
+# Run linters (statix, deadnix); hardware-configuration.nix keeps nixos-generate-config's shape
 lint:
-    statix check .
+    statix check . --ignore 'modules/hosts/*/hardware-configuration.nix'
     deadnix --fail .
 
 # Format all nix files

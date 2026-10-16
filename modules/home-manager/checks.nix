@@ -24,13 +24,15 @@
       osConfigStub = {
         sops.secrets."github/ssh-private-key".path = "/run/secrets/github/ssh-private-key";
       };
-      stylixStub = {
-        stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-        stylix.polarity = "dark";
-        stylix.image = pkgs.nixos-artwork.wallpapers.catppuccin-mocha.gnomeFilePath;
-        stylix.targets.neovim.enable = false;
-        stylix.targets.noctalia.enable = false;
-        stylix.targets.firefox.profileNames = [ "primary" ];
+      stylixStub.stylix = {
+        base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+        polarity = "dark";
+        image = pkgs.nixos-artwork.wallpapers.catppuccin-mocha.gnomeFilePath;
+        targets = {
+          neovim.enable = false;
+          noctalia.enable = false;
+          firefox.profileNames = [ "primary" ];
+        };
       };
     in
     {

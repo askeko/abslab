@@ -25,22 +25,24 @@ in
         base =
           { pkgs, osConfig, ... }:
           {
-            programs.gh = {
-              package = pkgs.gh.overrideAttrs (oldAttrs: {
-                buildInputs = oldAttrs.buildInputs or [ ] ++ [ pkgs.makeWrapper ];
-                postInstall = oldAttrs.postInstall or "" + ''
-                  wrapProgram $out/bin/gh --unset GITHUB_TOKEN
-                '';
-              });
-              enable = true;
-              settings.git_protocol = "ssh";
+            programs = {
+              gh = {
+                package = pkgs.gh.overrideAttrs (oldAttrs: {
+                  buildInputs = oldAttrs.buildInputs or [ ] ++ [ pkgs.makeWrapper ];
+                  postInstall = oldAttrs.postInstall or "" + ''
+                    wrapProgram $out/bin/gh --unset GITHUB_TOKEN
+                  '';
+                });
+                enable = true;
+                settings.git_protocol = "ssh";
+              };
+
+              git.settings.core.sshCommand = "ssh -i ${
+                osConfig.sops.secrets."github/ssh-private-key".path
+              } -o IdentitiesOnly=yes";
+
+              gh-dash.enable = true;
             };
-
-            programs.git.settings.core.sshCommand = "ssh -i ${
-              osConfig.sops.secrets."github/ssh-private-key".path
-            } -o IdentitiesOnly=yes";
-
-            programs.gh-dash.enable = true;
           };
         gui =
           { pkgs, ... }:

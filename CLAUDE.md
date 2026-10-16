@@ -147,5 +147,6 @@ Stylix-based declarative theming controlled by `flake.meta.theme.scheme` / `flak
 
 - Pipe operator `|>` is enabled globally via `nixConfig.extra-experimental-features`.
 - **Dev shell** is make-shell under `perSystem` (`make-shells.default` in `modules/just.nix` + `security/sops.nix`), loaded by direnv via `.envrc` → `use flake`. devenv was removed — don't reintroduce it. The shellHook's `exec zsh` is skipped under direnv (`DIRENV_IN_ENVRC`); known limitation: `nix develop -c <cmd>` hangs in an interactive zsh (accepted).
+- **`hosts/*/hardware-configuration.nix`** keeps `nixos-generate-config`'s shape (easy to regenerate/diff), so don't restyle it; `just lint` skips it for statix.
 - **Evaluating changes**: flakes ignore untracked files, so test with `nix eval "path:$PWD#nixosConfigurations.<host>.config.system.build.toplevel.drvPath"` until the user has `git add`ed new files.- `flake-parts` modules system: see `modules/flake-parts.nix` and `modules/configurations/nixos.nix`.
 - `modules/docs/dendritic-core.md` and `modules/docs/module-authoring.md` are the canonical pattern references — read them before authoring new modules.

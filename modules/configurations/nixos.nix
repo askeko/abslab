@@ -12,7 +12,7 @@
 
   config.flake = {
     nixosConfigurations = lib.flip lib.mapAttrs config.configurations.nixos (
-      name: { module }: lib.nixosSystem { modules = [ module ]; }
+      _: { module }: lib.nixosSystem { modules = [ module ]; }
     );
 
     checks =

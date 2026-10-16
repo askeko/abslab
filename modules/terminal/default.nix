@@ -1,23 +1,21 @@
 { lib, ... }:
 {
-  flake.modules.homeManager.gui =
-    hmArgs@{ pkgs, ... }:
-    {
-      options.terminal = {
-        path = lib.mkOption {
-          type = lib.types.path;
-          default = null;
-        };
-        desktopFileId = lib.mkOption {
-          type = lib.types.singleLineStr;
-        };
+  flake.modules.homeManager.gui = hmArgs: {
+    options.terminal = {
+      path = lib.mkOption {
+        type = lib.types.path;
+        default = null;
       };
-      config = {
-        xdg.terminal-exec = {
-          enable = true;
-          settings.default = [ hmArgs.config.terminal.desktopFileId ];
-        };
-        programs.niri.settings.binds."Mod+Return".action.spawn = "${hmArgs.config.terminal.path}";
+      desktopFileId = lib.mkOption {
+        type = lib.types.singleLineStr;
       };
     };
+    config = {
+      xdg.terminal-exec = {
+        enable = true;
+        settings.default = [ hmArgs.config.terminal.desktopFileId ];
+      };
+      programs.niri.settings.binds."Mod+Return".action.spawn = "${hmArgs.config.terminal.path}";
+    };
+  };
 }
