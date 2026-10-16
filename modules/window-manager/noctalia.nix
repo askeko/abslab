@@ -21,6 +21,8 @@
             shell_mode = lib.mkDefault "follow";
             source = lib.mkDefault "builtin";
             builtin = lib.mkDefault "Tokyo-Night";
+            # Feature modules add the apps they configure to builtin_ids.
+            templates.enable_builtin_templates = lib.mkDefault true;
           };
 
           shell = {
@@ -89,6 +91,7 @@
           bind(mod .. " + apostrophe", cmd(ipc .. "settings-toggle"), "Show settings menu")
           bind(mod .. " + SHIFT + Q", cmd(ipc .. "panel-toggle session"), "Power menu")
           bind("ALT + Tab", cmd(ipc .. "window-switcher hold"), "Window switcher")
+          bind(mod .. " + SHIFT + S", cmd(ipc .. "theme-mode-toggle"), "Toggle light/dark theme")
         '';
       };
     };

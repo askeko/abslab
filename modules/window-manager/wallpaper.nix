@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  wallpaperDir = config.flake.meta.theme.wallpaper.path;
+  wallpaperDir = "/home/${config.flake.meta.owner.username}/pictures/wallpapers";
 in
 {
   flake.modules.homeManager.gui = {

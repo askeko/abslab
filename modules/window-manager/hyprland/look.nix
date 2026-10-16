@@ -1,6 +1,6 @@
 { lib, ... }:
 {
-  flake.modules.homeManager.gui = hmArgs: {
+  flake.modules.homeManager.gui = {
     wayland.windowManager.hyprland.settings = {
       config = lib.mapAttrsRecursive (_: lib.mkDefault) {
         general = {
@@ -16,11 +16,6 @@
             left = 15;
           };
           border_size = 4;
-
-          col = with hmArgs.config.lib.stylix.colors; {
-            active_border = "rgb(${base0D})";
-            inactive_border = "rgb(${base03})";
-          };
         };
 
         scrolling = {
@@ -64,8 +59,16 @@
 
     };
 
-    # Hyprland's default curves and animations.
+    programs.noctalia.settings.theme.templates.builtin_ids = [ "hyprland" ];
+
     wayland.windowManager.hyprland.extraConfig = ''
+      -- Border colours from Noctalia's hyprland template (hypr/noctalia.lua),
+      -- which only exists after Noctalia's first render.
+      pcall(function()
+        require("noctalia").apply_theme()
+      end)
+
+      -- Hyprland's default curves and animations.
       hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
       hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
       hl.curve("linear", { type = "bezier", points = { { 0, 0 }, { 1, 1 } } })

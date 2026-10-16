@@ -1,4 +1,7 @@
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  inherit (config.flake.meta) fonts;
+in
 {
   flake.modules.homeManager.gui = hmArgs: {
     terminal = {
@@ -9,10 +12,21 @@
     programs.kitty = {
       enable = true;
 
-      settings = {
-        window_padding_width = 5;
-        enable_audio_bell = "no";
+      font = {
+        name = lib.mkDefault fonts.monospace.name;
+        size = lib.mkDefault fonts.sizes.terminal;
       };
+
+      settings = {
+        window_padding_width = lib.mkDefault 5;
+        background_opacity = lib.mkDefault "0.9";
+        enable_audio_bell = lib.mkDefault "no";
+      };
+
+      # Colours rendered by Noctalia's kitty template.
+      extraConfig = "include themes/noctalia.conf";
     };
+
+    programs.noctalia.settings.theme.templates.builtin_ids = [ "kitty" ];
   };
 }

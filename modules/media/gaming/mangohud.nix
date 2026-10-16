@@ -12,10 +12,8 @@
         ram = true;
         show_fps_limit = true;
         fps = true;
+        background_alpha = 0.6;
       };
-    };
-    stylix.targets.mangohud.opacity.override = {
-      popups = 0.6;
     };
   };
 }

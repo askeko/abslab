@@ -12,10 +12,7 @@
             "browser.ctrlTab.sortByRecentlyUsed" = true;
             "browser.tabs.closeWindowWithLastTab" = false;
           };
-          # mkAfter so this lands *after* Stylix's firefox-gnome-theme @import
-          # lines — CSS requires @import to precede all other rules, else the
-          # theme imports are silently dropped.
-          userChrome = lib.mkAfter ''
+          userChrome = ''
             #TabsToolbar {
               visibility: collapse !important;
               margin-bottom: 21px !important;

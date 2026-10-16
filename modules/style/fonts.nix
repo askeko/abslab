@@ -15,30 +15,37 @@
   flake.modules.nixos.pc =
     { pkgs, lib, ... }:
     let
-      emoji = config.flake.meta.fonts.emoji.name;
+      inherit (config.flake.meta) fonts;
     in
     {
-      # Extra symbols
-      fonts.packages = [
-        pkgs.nerd-fonts.symbols-only
-        pkgs.dejavu_fonts
+      fonts.packages = with pkgs; [
+        noto-fonts
+        nerd-fonts.fira-code
+        noto-fonts-color-emoji
+        # Symbol fallbacks
+        nerd-fonts.symbols-only
+        dejavu_fonts
       ];
 
-      # Symbols fallback for generic monospace requests
-      fonts.fontconfig.defaultFonts = {
-        monospace = lib.mkAfter [
+      # Each family falls back to the Nerd Font symbols and colour emoji.
+      fonts.fontconfig.defaultFonts = lib.mapAttrs (_: lib.mkDefault) {
+        monospace = [
+          fonts.monospace.name
           "Symbols Nerd Font Mono"
           "DejaVu Sans Mono"
-          emoji
+          fonts.emoji.name
         ];
-        sansSerif = lib.mkAfter [
+        sansSerif = [
+          fonts.sansSerif.name
           "Symbols Nerd Font"
-          emoji
+          fonts.emoji.name
         ];
-        serif = lib.mkAfter [
+        serif = [
+          fonts.serif.name
           "Symbols Nerd Font"
-          emoji
+          fonts.emoji.name
         ];
+        emoji = [ fonts.emoji.name ];
       };
     };
 }

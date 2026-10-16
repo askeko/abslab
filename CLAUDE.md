@@ -20,7 +20,7 @@ Compositor: **Hyprland** with the scrolling layout, started by **uwsm** (NixOS `
 - **Behaviour** (binds, event handlers) goes in `extraConfig` as Lua lines, spread across feature modules (dendritic style), e.g. `bind(mod .. " + D", cmd(ipc .. "panel-toggle launcher"), "App launcher")`. Helpers are Lua locals from `settings` (`_var`): `mod`, `bind(keys, action, desc, opts)`, `app` (runs via `uwsm-app`), `cmd` in `window-manager/hyprland/enable.nix`; `ipc` (`noctalia msg `) in `noctalia.nix`. Every bind needs a description (`Mod+Shift+/` lists them).
 - Compositor-level config lives in `modules/window-manager/hyprland/`; per-host monitors/keyboards in `hosts/<name>/`.
 - **Verify** a generated config before handing it over: build `…home-manager.users.absentia.xdg.configFile."hypr/hyprland.lua".source` and run `Hyprland --verify-config -c <copy>` — it catches unknown keys and bad dispatchers.
-- Stylix's `hyprland` target is off (it writes hyprlang settings); border colours are set in `hyprland/look.nix`.
+- Border colours come from Noctalia's hyprland template (see Theming).
 
 Desktop shell: **Noctalia v5** (HM `programs.noctalia`, systemd user service) — bar, launcher, notifications, lock screen, idle, wallpaper, clipboard history, OSD, screenshots and the polkit agent. Its TOML settings (`programs.noctalia.settings`) are spread across feature modules like the binds (core in `window-manager/noctalia.nix`, bar in `bar.nix`, idle/lock/wallpaper/notifications in their own files) and validated at build time; binds call `noctalia msg …`. The lock screen authenticates against the `login` PAM service (YubiKey rules in `security/yubikey.nix`). The configuration mirrors the Arch setup in `~/projects/arch` (absrice `noctalia/config.toml.tmpl`). **Prefer Noctalia over any program whose job it can do** — menus use `noctalia dmenu` (scripts) or launcher entries under `shell.launcher.dmenu.entry.<id>` (e.g. the `/run` menu in `desktop/launcher.nix`). rofi is only left for rofi-rbw, pinentry-rofi and rofimoji, and is slated for removal (see `todo.md`).
 
@@ -45,11 +45,10 @@ Desktop shell: **Noctalia v5** (HM `programs.noctalia`, systemd user service) �
 To add a new HM module to all desktop hosts, add it to `pc` in that file (or create a new NixOS module key and import it in host imports).
 
 `modules/home-manager/checks.nix` also builds `base`/`gui`/`laptop` as standalone HM
-flake checks (no host), using stubs for Stylix and `osConfig`. When an HM module
+flake checks (no host), using an `osConfig` stub. When an HM module
 reads a new `osConfig.<path>`, add that path to `osConfigStub` there — otherwise the
-checks fail with `expected a set but found null`. Optional reads that should fall back
-(theme polarity in `style/lazyvim.nix`, `style/theme-toggle.nix`) use `osConfig ? null`
-and must stay absent from the stub.
+checks fail with `expected a set but found null`. Optional reads that should
+fall back when there is no host use `osConfig ? null` and must stay absent from the stub.
 
 ### Module keys
 
@@ -136,16 +135,16 @@ modules/
   docs/         ← authoritative pattern docs (read-only reference)
 ```
 
-## Theming (Stylix)
+## Theming (Noctalia)
 
-Stylix-based declarative theming controlled by `flake.meta.theme.scheme` / `flake.meta.theme.mode` (active: gruvbox / dark).
+Noctalia is the single source of colours (builtin `Tokyo-Night`, `theme.mode` dark; light/dark via its control center or `Mod+Shift+S` → `theme-mode-toggle`). Stylix was removed — don't reintroduce it.
 
-- **Stylix is a flake input** (`inputs.stylix`); the NixOS module is imported in `theme.nix`.
-- **`modules/style/theme.nix`** holds the Stylix wiring and the `flake.meta.theme.schemes` registry (one entry feeds both Stylix's base16 scheme and LazyVim); it augments the existing `nixos.pc` and `homeManager.gui` namespaces — no new module keys.
-- **`modules/style/fonts.nix`** completes the fontconfig fallback chain (Symbols NF Mono → DejaVu Sans Mono → Noto Color Emoji) so kitty/etc. render dingbats/arrows/emoji — do **not** reintroduce a kitty `symbol_map`.
-- **`modules/window-manager/wallpaper.nix`** points Noctalia's wallpaper panel (`Mod+B`) at `flake.meta.theme.wallpaper.path`; Noctalia also draws the lock-screen background.
-- Stylix's `noctalia` target is disabled: Noctalia uses its builtin Tokyo-Night palette.
-- Theme options live under `flake.meta.theme.*` (consistent with `flake.meta.fonts`), not a new `my.*` namespace.
+- **App colours come from Noctalia's builtin templates** (`programs.noctalia.settings.theme.templates`, enabled in `noctalia.nix`). Each feature module adds its own id to `builtin_ids` and ships its config with Noctalia's include already in place, so Noctalia only writes its own colour files and never edits the read-only HM files: kitty (`include themes/noctalia.conf`, `terminal/kitty.nix`), btop (`color_theme = "noctalia"`, `hardware/system-monitor.nix`), GTK 3/4 (`@import url("noctalia.css")`, `ui-toolkit/gtk.nix`), Qt (qt6ct palette path, `ui-toolkit/qt.nix`), Hyprland borders (`require("noctalia")` in a `pcall`, `hyprland/look.nix`). Verified by running `noctalia theme <image> --builtin-config` against read-only copies.
+- Noctalia's GTK template also sets the GTK theme (`adw-gtk3`/`adw-gtk3-dark`) and `color-scheme` in dconf when the mode changes — don't set those in HM, or activation would undo a mode switch.
+- Apps without a Noctalia template (yazi, bat, fzf, zathura, imv, MangoHud, rofi, Neovim, lazygit, zsh autosuggest) use their own defaults for now — theming them is deferred (see `todo.md`).
+- **`modules/style/fonts.nix`** sets the font families (`flake.meta.fonts`) and the fontconfig fallback chain (Symbols NF Mono → DejaVu Sans Mono → Noto Color Emoji) so kitty/etc. render dingbats/arrows/emoji — do **not** reintroduce a kitty `symbol_map`.
+- **`modules/style/cursor.nix`**: breeze cursor, copied out of `kdePackages.breeze` (its full closure is ~1.8 GiB).
+- **`modules/window-manager/wallpaper.nix`** points Noctalia's wallpaper panel (`Mod+B`) at `~/pictures/wallpapers`; Noctalia also draws the lock-screen background.
 - **Discord stays the official client** (not Vesktop): Vesktop's Electron 40 breaks per-window screenshare. Don't re-attempt the swap.
 
 ## Misc

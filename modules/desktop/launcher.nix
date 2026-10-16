@@ -25,7 +25,7 @@
           window = {
             border = 2;
             border-radius = 12;
-            border-color = mkLiteral "@blue";
+
             padding = 0;
             width = mkLiteral "40em";
           };
@@ -41,7 +41,7 @@
             spacing = mkLiteral "8px";
             padding = mkLiteral "14px 16px";
             border = mkLiteral "0px 0px 1px 0px";
-            border-color = mkLiteral "@blue";
+
             children = mkLiteral "[ prompt, entry ]";
           };
           prompt.spacing = 0;
