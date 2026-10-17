@@ -61,6 +61,12 @@
           "/etc/NetworkManager/system-connections"
           "/var/lib/libvirt"
           "/var/lib/docker"
+          {
+            directory = "/var/lib/noctalia-greeter";
+            user = "greeter";
+            group = "greeter";
+            mode = "0750";
+          }
           "/var/db/sudo"
         ];
         files = [ "/etc/machine-id" ];
