@@ -1,9 +1,3 @@
-# Features
-
-- Hide notifications automatically during screencasts: Hyprland emits a
-  `screencast` event (socket2 / Lua event handler) — turn Noctalia's
-  do-not-disturb on when sharing starts and off when it stops.
-
 # Long term
 
 - treefmt for git/hooks.nix and language formatting in vim
