@@ -81,10 +81,7 @@ Themable programs
 
 # After the Arch migration
 
-- Move off rofi: rofi-rbw (Mod+M → Noctalia launcher entry, e.g. /pass that
-  types the password with wtype), pinentry-rofi (rbw unlock), rofimoji
-  (Mod+Shift+U, all characters).
 - Theme the apps Noctalia has no template for (yazi, bat, fzf, zathura, imv,
-  MangoHud, rofi, Neovim, lazygit, zsh autosuggestion colour): after Step 3
-  they use their own defaults. Options: static Tokyo Night as on Arch, or
-  custom Noctalia user templates that follow theme switches.
+  MangoHud, Neovim, lazygit, zsh autosuggestion colour): after Step 3
+  they use their own defaults. Approach: Noctalia user templates
+  (theme.templates.user.<id>), so they follow theme switches.

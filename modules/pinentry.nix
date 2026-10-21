@@ -12,7 +12,7 @@
     gui =
       { pkgs, ... }:
       {
-        config.pinentry = lib.mkForce pkgs.pinentry-rofi;
+        config.pinentry = lib.mkForce pkgs.pinentry-gnome3;
       };
   };
 
