@@ -7,31 +7,23 @@ _: {
       ...
     }:
     {
-      security.pam.u2f = {
-        enable = true;
-        control = "required";
-        settings.cue = true; # show a "touch your key" prompt
-      };
+      # Yubikey touch for logins
+      security.pam.u2f.settings.cue = true; # show a "touch your key" prompt
 
-      security.pam.services = {
-        # `login` covers TTY logins and Noctalia's lock screen, which
-        # authenticates against it. Password first, then touch, so the key is
-        # only asked for once it's plugged back in after an unplug lock.
-        #   unix requisite  → wrong password aborts without asking for a touch
-        #   u2f  sufficient → touch completes auth (a prior requisite failure
-        #                     can't be overridden), else fall through to deny
-        login = {
-          u2fAuth = true;
-          rules.auth.unix = {
-            control = lib.mkForce "requisite";
-            order = config.security.pam.services.login.rules.auth.u2f.order - 10;
-          };
-          rules.auth.u2f.control = lib.mkForce "sufficient";
+      # Password first, then touch, so the key is only asked for once it's
+      # plugged back in after an unplug lock.
+      #   unix requisite  → wrong password aborts without asking for a touch
+      #   u2f  sufficient → touch completes auth (a prior requisite failure
+      #                     can't be overridden), else fall through to deny
+      security.pam.services.login = {
+        u2f = {
+          enable = true;
+          control = "sufficient";
         };
-        sudo.u2fAuth = lib.mkDefault false;
-        su.u2fAuth = lib.mkDefault false;
-        "su-l".u2fAuth = lib.mkDefault false;
-        polkit-1.u2fAuth = lib.mkDefault false; # no touch on GUI auth prompts
+        rules.auth.unix = {
+          control = lib.mkForce "requisite";
+          order = config.security.pam.services.login.rules.auth.u2f.order - 10;
+        };
       };
 
       environment.systemPackages = with pkgs; [
