@@ -35,7 +35,7 @@ in
           {
             workspace = toString ws;
             persistent = true;
-            default_name = "󰣇";
+            default_name = "";
             monitor = if ws <= 5 then samsung else acer;
             default = ws == 1 || ws == 6;
           }

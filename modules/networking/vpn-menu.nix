@@ -56,10 +56,31 @@
         bind(mod .. " + SHIFT + V", app("${lib.getExe vpn-menu}"), "VPN menu")
       '';
 
+      # Green with the tunnel's name while one is up, greyed out otherwise
+      # (status widget, window-manager/bar-status.nix).
       programs.noctalia.settings.widget.vpn = {
-        type = lib.mkDefault "custom_button";
-        glyph = lib.mkDefault "shield-lock";
-        tooltip = lib.mkDefault "VPN menu";
+        type = lib.mkDefault "absentia/status:exec";
+        exec = lib.mkDefault (
+          lib.getExe (
+            pkgs.writeShellApplication {
+              name = "status-vpn";
+              runtimeInputs = [
+                pkgs.iproute2
+                pkgs.jq
+              ];
+              text = ''
+                ip -j -d link show | jq -c '[.[] | select(.linkinfo.info_kind == "wireguard")] | .[0].ifname |
+                  if . then { glyph: "shield-lock", text: ., class: "up", tooltip: "VPN: \(.)" }
+                  else { glyph: "shield-off", class: "down", tooltip: "VPN off" } end'
+              '';
+            }
+          )
+        );
+        watch = lib.mkDefault "${lib.getExe' pkgs.iproute2 "ip"} monitor link";
+        colors = {
+          up = lib.mkDefault "green";
+          down = lib.mkDefault "outline";
+        };
         actions.left = lib.mkDefault "exec ${lib.getExe vpn-menu}";
       };
     };

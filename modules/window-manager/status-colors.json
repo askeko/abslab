@@ -1,0 +1,5 @@
+{
+  "green": "{{colors.terminal_normal_green.default.hex}}",
+  "yellow": "{{colors.terminal_normal_yellow.default.hex}}",
+  "red": "{{colors.terminal_normal_red.default.hex}}"
+}

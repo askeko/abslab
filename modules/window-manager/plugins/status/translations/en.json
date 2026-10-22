@@ -1,0 +1,12 @@
+{
+  "settings.exec.label": "Command",
+  "settings.exec.description": "Prints the state as one JSON line: { glyph, text, tooltip, class }. No glyph hides the widget.",
+  "settings.watch.label": "Watch command",
+  "settings.watch.description": "Long-running command; each line it prints re-runs the command.",
+  "settings.interval.label": "Interval (seconds)",
+  "settings.interval.description": "Also re-run the command this often. 0 turns it off.",
+  "settings.colors.label": "Colours",
+  "settings.colors.description": "Class to colour: green, yellow or red from the theme, a colour role, or a hex value.",
+  "settings.blink.label": "Blinking classes",
+  "settings.blink.description": "Classes whose colour flashes."
+}

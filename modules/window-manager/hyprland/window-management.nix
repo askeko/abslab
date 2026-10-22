@@ -1,13 +1,13 @@
 { lib, ... }:
 {
   flake.modules.homeManager.gui.wayland.windowManager.hyprland = {
-    # Workspaces 1-10, shown by name in the bar (nf-md-arch glyph). Hosts that
+    # Workspaces 1-10, shown by name in the bar (nf-linux-nixos glyph). Hosts that
     # pin workspaces to monitors replace the whole list.
     settings.workspace_rule = lib.mkDefault (
       lib.genList (i: {
         workspace = toString (i + 1);
         persistent = true;
-        default_name = "󰣇";
+        default_name = "";
       }) 10
     );
 

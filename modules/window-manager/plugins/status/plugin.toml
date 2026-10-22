@@ -1,0 +1,47 @@
+id = "absentia/status"
+name = "Status"
+version = "1.0.0"
+plugin_api = 6
+author = "absentia"
+description = "Bar indicators fed by a command and coloured by state, after Waybar's custom modules."
+
+[[widget]]
+id = "exec"
+entry = "exec.luau"
+
+  [[widget.setting]]
+  key = "exec"
+  type = "string"
+  label_key = "settings.exec.label"
+  description_key = "settings.exec.description"
+  default = ""
+
+  [[widget.setting]]
+  key = "watch"
+  type = "string"
+  label_key = "settings.watch.label"
+  description_key = "settings.watch.description"
+  default = ""
+
+  [[widget.setting]]
+  key = "interval"
+  type = "int"
+  label_key = "settings.interval.label"
+  description_key = "settings.interval.description"
+  default = 0
+  min = 0
+  max = 86400
+
+  [[widget.setting]]
+  key = "colors"
+  type = "string_map"
+  label_key = "settings.colors.label"
+  description_key = "settings.colors.description"
+  default = {}
+
+  [[widget.setting]]
+  key = "blink"
+  type = "string_list"
+  label_key = "settings.blink.label"
+  description_key = "settings.blink.description"
+  default = []
