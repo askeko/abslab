@@ -1,14 +1,3 @@
-# After the bar fixes
-
-- Keyring isn't unlocked after a logout or reboot (e.g. Claude finds it
-  locked). It should unlock from either login path:
-  - boot: LUKS password + YubiKey, then greetd autologin (`login/auto.nix`,
-    `initial_session`) — no password reaches PAM, so pam_gnome_keyring has
-    nothing to unlock with.
-  - greeter: password + YubiKey touch via `login` (`security/yubikey.nix`);
-    `enableGnomeKeyring` is set on `greetd` (`hyprland/enable.nix`) — check
-    whether u2f `sufficient` returns before the keyring's auth module runs.
-
 # Long term
 
 - treefmt for git/hooks.nix and language formatting in vim

@@ -4,7 +4,8 @@ let
 in
 {
   # Noctalia Greeter on greetd, with absentia and the uwsm Hyprland session
-  # preselected. greetd's PAM includes `login`, so it asks for the password,
+  # preselected, at boot too: no autologin, since the password is what unlocks
+  # the keyring. greetd's PAM includes `login`, so it asks for the password,
   # then a YubiKey touch (security/yubikey.nix).
   flake.modules.nixos.pc = nixosArgs: {
     services.displayManager.noctalia-greeter = {

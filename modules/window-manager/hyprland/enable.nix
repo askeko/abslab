@@ -4,7 +4,7 @@
   # (graphical-session.target). Session services (Noctalia, udiskie, …) are
   # systemd user units; nothing is started from the compositor config.
   flake.modules.nixos.pc =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       programs.hyprland = {
         enable = lib.mkDefault true;
@@ -14,8 +14,12 @@
       # File pickers (the Hyprland portal has none).
       xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
+      # Logins (greetd's PAM includes `login`) unlock the `login` keyring with
+      # the password. Its auth step has to see the password before the YubiKey
+      # touch, whose `sufficient` success ends auth (security/yubikey.nix).
       services.gnome.gnome-keyring.enable = lib.mkDefault true;
-      security.pam.services.greetd.enableGnomeKeyring = lib.mkDefault true;
+      security.pam.services.login.rules.auth.gnome_keyring.order =
+        config.security.pam.services.login.rules.auth.u2f.order - 5;
     };
 
   flake.modules.homeManager.gui =
