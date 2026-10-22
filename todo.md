@@ -9,7 +9,6 @@ Apps Noctalia has no builtin template for use their own defaults. Theme them
 with Noctalia user templates (`theme.templates.user.<id>`) so they follow
 theme switches, one app at a time:
 
-- yazi
 - bat
 - fzf
 - zathura
