@@ -14,8 +14,6 @@ theme switches, one app at a time:
   that's the spicetify-nix flake), or switch to a themable alternative client
 - Firefox: Pywalfox extension, driven by Noctalia's built-in `firefox-theme`
   host (community template `pywalfox-beta4`)
-- Obsidian: CSS snippet in the vault's `.obsidian/snippets/` (community
-  `obsidian.css` as a user template)
 - Steam: needs the Millennium mod framework + Material Theme (community Steam
   template) — check it's worth patching the client
 - MangoHud (low priority)
