@@ -9,8 +9,6 @@ Apps Noctalia has no builtin template for use their own defaults. Theme them
 with Noctalia user templates (`theme.templates.user.<id>`) so they follow
 theme switches, one app at a time:
 
-- imv
-- Neovim
 - zsh autosuggestion colour
 - Vesktop (Noctalia has a community Discord template, fetched from
   api.noctalia.dev — or write a user template for a Vencord theme)
