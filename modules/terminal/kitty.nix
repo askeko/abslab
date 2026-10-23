@@ -19,7 +19,6 @@ in
 
       settings = {
         window_padding_width = lib.mkDefault 5;
-        background_opacity = lib.mkDefault "0.9";
         enable_audio_bell = lib.mkDefault "no";
       };
 

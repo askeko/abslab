@@ -30,10 +30,9 @@
             # Apps started from the launcher get their own systemd scope.
             launch_apps_as_systemd_services = lib.mkDefault true;
 
-            # Floating panels draw their own (glass) background; panels attached
-            # to the bar take its background.
+            # Floating panels draw their own (solid, the default) background;
+            # panels attached to the bar take its background.
             panel = {
-              transparency_mode = lib.mkDefault "glass";
               control_center_placement = lib.mkDefault "floating";
               control_center_position = lib.mkDefault "auto";
               wallpaper_placement = lib.mkDefault "floating";
@@ -79,9 +78,6 @@
               name = "noctalia";
               match.namespace = "^noctalia-(bar-.+|notification|dock|panel|attached-panel|osd|window-switcher)$";
               no_anim = true;
-              ignore_alpha = 0.5;
-              blur = true;
-              blur_popups = true;
             }
           ];
         };
