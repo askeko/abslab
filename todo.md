@@ -12,8 +12,6 @@ theme switches, one app at a time:
 - Spotify: the official client can't be themed as-is. Noctalia's community
   Spotify template targets Spicetify (patches the official client; on Nix
   that's the spicetify-nix flake), or switch to a themable alternative client
-- Firefox: Pywalfox extension, driven by Noctalia's built-in `firefox-theme`
-  host (community template `pywalfox-beta4`)
 - Steam: needs the Millennium mod framework + Material Theme (community Steam
   template) — check it's worth patching the client
 - MangoHud (low priority)
