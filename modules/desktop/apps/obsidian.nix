@@ -19,8 +19,12 @@
       in
       lib.nameValuePair "obsidian_${name}" {
         input_path = lib.mkDefault "${./obsidian-noctalia/obsidian.css}";
-        output_path = lib.mkDefault "${dir}/snippets/noctalia.css";
-        requires_path = lib.mkDefault dir;
+        # requires_path is not supported by Noctalia's shell config schema.
+        output_path_dynamic = lib.mkDefault ''
+          if [ -d ${lib.escapeShellArg dir} ]; then
+            printf '%s\n' ${lib.escapeShellArg "${dir}/snippets/noctalia.css"}
+          fi
+        '';
       }
     ) hmArgs.config.programs.obsidian.vaults;
   };
