@@ -1,0 +1,5 @@
+{
+  "name": "Noctalia",
+  "base": "{{ mode }}",
+  "overrides": {}
+}

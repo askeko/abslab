@@ -22,4 +22,13 @@
       # network relay, comes from networking/utils.nix).
       home.packages = [ pkgs.bubblewrap ];
     };
+
+  # Claude Code's own light or dark theme, following Noctalia's mode: a custom
+  # theme that only picks the base (no colour overrides, unlike the community
+  # template's Material roles). Claude Code reloads it live; selected once with
+  # /theme -> Noctalia.
+  flake.modules.homeManager.gui.programs.noctalia.settings.theme.templates.user.claude_code = {
+    input_path = lib.mkDefault "${./claude-code-noctalia/theme.json}";
+    output_path = lib.mkDefault "~/.claude/themes/noctalia.json";
+  };
 }
