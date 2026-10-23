@@ -23,26 +23,9 @@
       home.packages = [ pkgs.bubblewrap ];
     };
 
-  flake.modules.homeManager.gui.programs.noctalia.settings.theme.templates.user = {
-    # Claude Code in the active theme's colours: its light/dark base from
-    # Noctalia's mode, every colour token overridden from the palette (diff
-    # backgrounds stay the base's: they need tints templates can't blend). Not
-    # the dark-ansi/light-ansi presets: they assume conventional ANSI slots,
-    # which light palettes swap. Claude Code reloads it live; selected once with
-    # /theme -> Noctalia.
-    claude_code = {
-      input_path = lib.mkDefault "${./claude-code-noctalia/theme.json}";
-      output_path = lib.mkDefault "~/.claude/themes/noctalia.json";
-    };
-
-    # Codex's code highlighting: tokyonight's tmTheme (tokyonight.nvim
-    # extras/sublime/tokyonight_night.tmTheme) with its colours swapped for
-    # Noctalia's, mapped like Neovim's on_colors (lazyvim/noctalia/theme.lua);
-    # orange, which Noctalia lacks, is bright red. Codex reads it at session
-    # start; selected once with [tui] theme = "noctalia" in its config.toml.
-    codex = {
-      input_path = lib.mkDefault "${./codex-noctalia/noctalia.tmTheme}";
-      output_path = lib.mkDefault "$XDG_CONFIG_HOME/codex/themes/noctalia.tmTheme";
-    };
-  };
+  # Codex highlights code with Rosé Pine's tmTheme port, selected once with
+  # [tui] theme = "rose-pine" in its own config.toml. Claude Code has no
+  # port: its built-in dark theme.
+  flake.modules.homeManager.gui.xdg.configFile."codex/themes/rose-pine.tmTheme".source =
+    "${inputs.rose-pine-tm-theme}/dist/rose-pine.tmTheme";
 }

@@ -265,9 +265,111 @@
         "make-shell": "make-shell",
         "nix-index-database": "nix-index-database",
         "nixpkgs": "nixpkgs_3",
+        "rose-pine-btop": "rose-pine-btop",
+        "rose-pine-eza": "rose-pine-eza",
+        "rose-pine-firefox": "rose-pine-firefox",
+        "rose-pine-gtk": "rose-pine-gtk",
+        "rose-pine-tm-theme": "rose-pine-tm-theme",
+        "rose-pine-yazi": "rose-pine-yazi",
         "sops-nix": "sops-nix",
         "ucodenix": "ucodenix",
         "zsh-auto-notify": "zsh-auto-notify"
+      }
+    },
+    "rose-pine-btop": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1762352811,
+        "narHash": "sha256-vtqqMEQbPOSRfQ28RIln5zZ4cZlyB3sMc2NaLUcITWo=",
+        "owner": "rose-pine",
+        "repo": "btop",
+        "rev": "c27e5d48e44e8bd115a2838ecf8cf1f3ea39475e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rose-pine",
+        "repo": "btop",
+        "type": "github"
+      }
+    },
+    "rose-pine-eza": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1787106797,
+        "narHash": "sha256-UNdszLPp2IOAUydJQgoa3WwCr99dpD7bju0ktAtVS1I=",
+        "owner": "rose-pine",
+        "repo": "eza",
+        "rev": "ffd796b8265cc6395231f4ad663e6749f34fc897",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rose-pine",
+        "repo": "eza",
+        "type": "github"
+      }
+    },
+    "rose-pine-firefox": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772900422,
+        "narHash": "sha256-5QOVoAWYI7qZGaf62Yv+8saJw/Iv8GMK2sJl2xd+JNo=",
+        "owner": "rose-pine",
+        "repo": "firefox",
+        "rev": "efc1896fb77b5e6984e15338659c1c7a23af2fa3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rose-pine",
+        "repo": "firefox",
+        "type": "github"
+      }
+    },
+    "rose-pine-gtk": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1762352813,
+        "narHash": "sha256-58HfkFvflQhiJzfHcJCihSE9YbxbD6Koe0/aT+PVv4w=",
+        "owner": "rose-pine",
+        "repo": "gtk",
+        "rev": "3a11f84e11685aacaa749deea1e9f02872b99fdf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rose-pine",
+        "repo": "gtk",
+        "type": "github"
+      }
+    },
+    "rose-pine-tm-theme": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1782141626,
+        "narHash": "sha256-5+fG21KbB7bdPvszkz9Ftl6fCDGs17fJNTAXFRFWZGo=",
+        "owner": "rose-pine",
+        "repo": "tm-theme",
+        "rev": "6d556734541ccb04172e81fd58de4a35fff72d19",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rose-pine",
+        "repo": "tm-theme",
+        "type": "github"
+      }
+    },
+    "rose-pine-yazi": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771874935,
+        "narHash": "sha256-9e3dXViWl1rK9BPrGAFfs9ZL/tsG6Njz6ksuU6AIrFY=",
+        "owner": "rose-pine",
+        "repo": "yazi",
+        "rev": "c89d745573d4fcfe0550fe6646f9f9ab1c0e51db",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rose-pine",
+        "repo": "yazi",
+        "type": "github"
       }
     },
     "sops-nix": {

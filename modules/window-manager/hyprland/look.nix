@@ -1,4 +1,8 @@
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  palette = config.flake.meta.rosePine;
+  rgb = color: "rgb(${lib.removePrefix "#" color})";
+in
 {
   flake.modules.homeManager.gui = {
     wayland.windowManager.hyprland.settings = {
@@ -16,6 +20,12 @@
             left = 15;
           };
           border_size = 4;
+          # Rosé Pine's Hyprland port has the focused window's border in its
+          # colours and the others muted; here the focused one is iris.
+          col = {
+            active_border = rgb palette.iris;
+            inactive_border = rgb palette.muted;
+          };
         };
 
         scrolling = {
@@ -54,15 +64,7 @@
 
     };
 
-    programs.noctalia.settings.theme.templates.builtin_ids = [ "hyprland" ];
-
     wayland.windowManager.hyprland.extraConfig = ''
-      -- Border colours from Noctalia's hyprland template (hypr/noctalia.lua),
-      -- which only exists after Noctalia's first render.
-      pcall(function()
-        require("noctalia").apply_theme()
-      end)
-
       -- Hyprland's default curves and animations.
       hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
       hl.curve("easeInOutCubic", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })

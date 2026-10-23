@@ -1,37 +1,36 @@
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  palette = config.flake.meta.rosePine;
+in
 {
-  # Noctalia colours: its community zathura template, vendored in
-  # zathura-noctalia/ (noctalia-dev/community-templates@0f898db, zathura/),
-  # included from zathurarc. Its apply.sh only reloads open windows over D-Bus;
-  # the post_hook does the same.
-  flake.modules.homeManager.gui =
-    { pkgs, ... }:
-    {
-      programs.zathura = {
-        enable = true;
-        extraConfig = "include noctaliarc";
-      };
-      xdg.mimeApps.defaultApplications = {
-        "application/pdf" = [ "org.pwmt.zathura.desktop" ];
-      };
-
-      programs.noctalia.settings.theme.templates.user.zathura = {
-        input_path = lib.mkDefault "${./zathura-noctalia/zathurarc}";
-        output_path = lib.mkDefault "$XDG_CONFIG_HOME/zathura/noctaliarc";
-        post_hook = lib.mkDefault (
-          lib.getExe (
-            pkgs.writeShellApplication {
-              name = "zathura-reload";
-              runtimeInputs = [ pkgs.dbus ];
-              text = ''
-                for id in $(dbus-send --session --print-reply --dest=org.freedesktop.DBus \
-                  /org/freedesktop/DBus org.freedesktop.DBus.ListNames | grep -o 'org.pwmt.zathura.PID-[0-9]*' || true); do
-                  dbus-send --session --dest="$id" /org/pwmt/zathura org.pwmt.zathura.ExecuteCommand string:source
-                done
-              '';
-            }
-          )
-        );
-      };
+  # Rosé Pine has no zathura port: its palette on zathura's own colours.
+  flake.modules.homeManager.gui = {
+    programs.zathura = {
+      enable = true;
+      options = lib.mapAttrs (_: lib.mkDefault) (
+        with palette;
+        {
+          default-bg = base;
+          default-fg = text;
+          statusbar-bg = surface;
+          statusbar-fg = text;
+          inputbar-bg = surface;
+          inputbar-fg = text;
+          notification-bg = surface;
+          notification-fg = text;
+          completion-bg = surface;
+          completion-fg = text;
+          completion-highlight-bg = highlightMed;
+          completion-highlight-fg = text;
+          highlight-color = gold;
+          highlight-active-color = iris;
+          recolor-lightcolor = base;
+          recolor-darkcolor = text;
+        }
+      );
     };
+    xdg.mimeApps.defaultApplications = {
+      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+    };
+  };
 }

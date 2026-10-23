@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  flake.modules.homeManager.lazyvim = {
+  flake.modules.homeManager.lazyvim = hmArgs: {
     imports = [ inputs.lazyvim.homeManagerModules.default ];
 
     programs.lazyvim = {
@@ -37,13 +37,23 @@
       };
     };
 
-    home.sessionVariables = {
-      EDITOR = "nvim";
-      VISUAL = "nvim";
-    };
-    home.shellAliases = {
-      vim = "nvim";
-      vimdiff = "nvim -d";
+    home = {
+      # vim.loader's bytecode cache keys a module on its mtime and size, and
+      # every file in the store has mtime 1: a rebuilt config of the same size
+      # (say, a theme's "soft" for "hard") would load stale. Drop it on each
+      # activation.
+      activation.nvimLuaCache = hmArgs.lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+        run rm -rf $VERBOSE_ARG ${hmArgs.config.xdg.cacheHome}/nvim/luac
+      '';
+
+      sessionVariables = {
+        EDITOR = "nvim";
+        VISUAL = "nvim";
+      };
+      shellAliases = {
+        vim = "nvim";
+        vimdiff = "nvim -d";
+      };
     };
   };
 }

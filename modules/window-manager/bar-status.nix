@@ -1,13 +1,20 @@
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  # Rosé Pine's success, warning and error colours, as its GTK port maps them.
+  status = with config.flake.meta.rosePine; {
+    good = foam;
+    warning = gold;
+    bad = love;
+  };
+in
 {
   # State-coloured bar indicators from our own Noctalia plugin (plugins/status),
   # after Waybar's custom modules: a check script prints the state as JSON and
-  # runs again on each event of a watch command. Classes map to the theme's
-  # green/yellow/red, which a user template keeps in sync with theme switches.
+  # runs again on each event of a watch command. Classes map to a colour (hex
+  # or a Noctalia role).
   flake.modules.homeManager.gui =
-    hmArgs@{ pkgs, ... }:
+    { pkgs, ... }:
     let
-      noctalia = lib.getExe hmArgs.config.programs.noctalia.package;
       script =
         name: runtimeInputs: text:
         lib.getExe (
@@ -35,12 +42,6 @@
             }
           ];
           auto_update = lib.mkDefault "none";
-        };
-
-        theme.templates.user.status_colors = {
-          input_path = lib.mkDefault "${./status-colors.json}";
-          output_path = lib.mkDefault "$XDG_CACHE_HOME/noctalia/status-colors.json";
-          post_hook = lib.mkDefault "${noctalia} msg plugin absentia/status:exec all palette";
         };
 
         widget = {
@@ -80,10 +81,10 @@
             watch = lib.mkDefault "${lib.getExe' pkgs.systemd "udevadm"} monitor --udev --subsystem-match=power_supply";
             interval = lib.mkDefault 60;
             colors = {
-              good = lib.mkDefault "green";
-              warning = lib.mkDefault "yellow";
-              low = lib.mkDefault "red";
-              critical = lib.mkDefault "red";
+              good = lib.mkDefault status.good;
+              warning = lib.mkDefault status.warning;
+              low = lib.mkDefault status.bad;
+              critical = lib.mkDefault status.bad;
             };
             blink = lib.mkDefault [ "critical" ];
             actions.left = lib.mkDefault "panel-toggle control-center power";
@@ -109,8 +110,8 @@
             );
             watch = lib.mkDefault "${lib.getExe' pkgs.networkmanager "nmcli"} monitor";
             colors = {
-              up = lib.mkDefault "green";
-              down = lib.mkDefault "red";
+              up = lib.mkDefault status.good;
+              down = lib.mkDefault status.bad;
             };
             actions = {
               left = lib.mkDefault "panel-toggle control-center network";
@@ -136,7 +137,7 @@
             );
             watch = lib.mkDefault "${lib.getExe' pkgs.glib "gdbus"} monitor --system --dest org.bluez";
             colors = {
-              on = lib.mkDefault "green";
+              on = lib.mkDefault status.good;
               off = lib.mkDefault "outline";
             };
             actions = {

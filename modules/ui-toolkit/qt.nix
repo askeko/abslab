@@ -4,15 +4,15 @@ let
   qtFont = name: ''"${name},${toString fonts.sizes.applications}"'';
 in
 {
-  # Qt 5 and 6 share the Fusion style and Noctalia's generated palette.
+  # Qt 5 and 6: Rosé Pine's Kvantum port (iris accent, as its GTK 4 port),
+  # with qtct for fonts.
   flake.modules.homeManager.gui =
-    hmArgs:
+    { pkgs, ... }:
     let
-      qtctSettings = qtct: {
+      qtctSettings = {
         Appearance = {
-          style = lib.mkDefault "Fusion";
-          custom_palette = lib.mkDefault true;
-          color_scheme_path = lib.mkDefault "${hmArgs.config.xdg.configHome}/${qtct}/colors/noctalia.conf";
+          style = lib.mkDefault "kvantum";
+          custom_palette = lib.mkDefault false;
           standard_dialogs = lib.mkDefault "default";
         };
         Fonts = {
@@ -25,10 +25,18 @@ in
       qt = {
         enable = true;
         platformTheme.name = lib.mkDefault "qtct";
-        qt5ctSettings = qtctSettings "qt5ct";
-        qt6ctSettings = qtctSettings "qt6ct";
+        style.name = lib.mkDefault "kvantum";
+        qt5ctSettings = qtctSettings;
+        qt6ctSettings = qtctSettings;
+        kvantum = {
+          enable = true;
+          settings.General.theme = lib.mkDefault "rose-pine-iris";
+        };
       };
 
-      programs.noctalia.settings.theme.templates.builtin_ids = [ "qt" ];
+      # Kvantum looks for Kvantum/<theme>/; nixpkgs' rose-pine-kvantum has its
+      # themes one level deeper, so qt.kvantum.themes would miss them.
+      xdg.configFile."Kvantum/rose-pine-iris".source =
+        "${pkgs.rose-pine-kvantum}/share/Kvantum/themes/rose-pine-iris";
     };
 }

@@ -11,12 +11,7 @@ for _, class in noctalia.getConfig("blink") do
   blink[class] = true
 end
 
--- green/yellow/red follow the theme's terminal colours, which the status-colors
--- template writes here (bar-status.nix) and announces with a "palette" message.
-local PALETTE_PATH = (noctalia.getenv("XDG_CACHE_HOME") or "~/.cache") .. "/noctalia/status-colors.json"
-local FALLBACK = { green = "primary", yellow = "secondary", red = "error" }
 local BLINK_MS = 500
-local palette = {}
 
 local state = nil
 local dimmed = false
@@ -24,17 +19,11 @@ local started = false
 local running, rerun = false, false
 local lastRun = 0
 
-local function loadPalette()
-  local raw = noctalia.readFile(PALETTE_PATH)
-  palette = raw and noctalia.json.decode(raw) or {}
-end
-
 local function colorOf(class)
-  local name = colors[class]
-  if name == nil then
+  local color = colors[class]
+  if color == nil then
     return "on_surface" -- the widget's own colour
   end
-  local color = palette[name] or FALLBACK[name] or name
   if dimmed then
     -- A role takes no alpha here, so a role colour flashes to the idle outline.
     return color:match("^#%x%x%x%x%x%x$") and color .. "40" or "outline"
@@ -105,7 +94,6 @@ end
 function update()
   if not started then
     started = true
-    loadPalette()
     run()
     if watch ~= "" then
       -- Restarted if it ever exits.
@@ -121,9 +109,3 @@ function update()
   schedule()
 end
 
-function onIpc(event)
-  if event == "palette" then
-    loadPalette()
-    draw()
-  end
-end

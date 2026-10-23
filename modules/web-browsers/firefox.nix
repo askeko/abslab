@@ -1,82 +1,74 @@
-{ lib, ... }:
+{ inputs, lib, ... }:
+let
+  # Rosé Pine's Firefox port in its userChrome form: a restyle of the browser
+  # (userChrome.css) and of its own pages (userContent.css, which imports
+  # userColors.css), with the arrow icons it uses, all from its dist/ into the
+  # profile's chrome/.
+  port = "${inputs.rose-pine-firefox}/dist";
+in
 {
-  flake.modules.homeManager.gui =
-    hmArgs@{ pkgs, ... }:
-    let
-      noctalia = lib.getExe hmArgs.config.programs.noctalia.package;
-    in
-    {
-      home.sessionVariables.BROWSER = lib.getExe hmArgs.config.programs.firefox.package;
+  flake.modules.homeManager.gui = hmArgs: {
+    home.sessionVariables.BROWSER = lib.getExe hmArgs.config.programs.firefox.package;
 
-      programs = {
-        firefox = {
-          configPath = "${hmArgs.config.xdg.configHome}/mozilla/firefox";
-          enable = true;
-          profiles = {
-            primary = {
-              id = 0;
-              settings = {
-                "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
-                "browser.ctrlTab.sortByRecentlyUsed" = true;
-                "browser.tabs.closeWindowWithLastTab" = false;
-              };
-              userChrome = ''
-                #TabsToolbar {
-                  visibility: collapse !important;
-                  margin-bottom: 21px !important;
-                }
-              '';
-              userContent = "";
+    programs = {
+      firefox = {
+        configPath = "${hmArgs.config.xdg.configHome}/mozilla/firefox";
+        enable = true;
+        profiles = {
+          primary = {
+            id = 0;
+            settings = {
+              "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+              "browser.ctrlTab.sortByRecentlyUsed" = true;
+              "browser.tabs.closeWindowWithLastTab" = false;
             };
-          };
+            userChrome = builtins.readFile "${port}/userChrome.css" + ''
 
-          # Noctalia colours through the Pywalfox extension (added in Firefox),
-          # with Noctalia as its native messaging host. The manifest lives in
-          # ~/.mozilla even with XDG profiles.
-          nativeMessagingHosts = [
-            (pkgs.writeTextDir "lib/mozilla/native-messaging-hosts/pywalfox.json" (
-              builtins.toJSON {
-                name = "pywalfox";
-                description = "Noctalia Firefox theme native messaging host";
-                path = noctalia;
-                type = "stdio";
-                allowed_extensions = [ "pywalfox@frewacom.org" ];
+              #TabsToolbar {
+                visibility: collapse !important;
+                margin-bottom: 21px !important;
               }
-            ))
-          ];
-        };
-
-        # Its community pywalfox template, vendored in firefox-noctalia/
-        # (noctalia-dev/community-templates@a38fc33, pywalfox/). The template's
-        # firefox-theme post_action is replaced by its two CLI steps (mode,
-        # update): it would also rewrite the manifest to Noctalia's unwrapped
-        # binary.
-        noctalia.settings.theme.templates.user.pywalfox = {
-          input_path = lib.mkDefault "${./firefox-noctalia/pywalfox.json}";
-          output_path = lib.mkDefault "$XDG_CACHE_HOME/wal/colors.json";
-          post_hook = lib.mkDefault "${noctalia} firefox-theme {{ mode }}; ${noctalia} firefox-theme update || true";
+            '';
+            userContent = builtins.readFile "${port}/userContent.css";
+          };
         };
       };
-
-      wayland.windowManager.hyprland.extraConfig = ''
-        bind(mod .. " + W", app("${lib.getExe hmArgs.config.programs.firefox.package}"), "Browser")
-      '';
-
-      xdg.mimeApps.defaultApplications =
-        [
-          "x-scheme-handler/http"
-          "x-scheme-handler/https"
-          "x-scheme-handler/chrome"
-          "x-scheme-handler/file"
-          "text/html"
-          "application/x-extension-htm"
-          "application/x-extension-html"
-          "application/x-extension-shtml"
-          "application/xhtml+xml"
-          "application/x-extension-xhtml"
-          "application/x-extension-xht"
-        ]
-        |> map (type: lib.nameValuePair type [ "firefox.desktop" ])
-        |> lib.listToAttrs;
     };
+
+    home.file =
+      lib.genAttrs'
+        [
+          "userColors.css"
+          "add.svg"
+          "left-arrow.svg"
+          "right-arrow.svg"
+        ]
+        (
+          file:
+          lib.nameValuePair "${hmArgs.config.programs.firefox.profilesPath}/primary/chrome/${file}" {
+            source = "${port}/${file}";
+          }
+        );
+
+    wayland.windowManager.hyprland.extraConfig = ''
+      bind(mod .. " + W", app("${lib.getExe hmArgs.config.programs.firefox.package}"), "Browser")
+    '';
+
+    xdg.mimeApps.defaultApplications =
+      [
+        "x-scheme-handler/http"
+        "x-scheme-handler/https"
+        "x-scheme-handler/chrome"
+        "x-scheme-handler/file"
+        "text/html"
+        "application/x-extension-htm"
+        "application/x-extension-html"
+        "application/x-extension-shtml"
+        "application/xhtml+xml"
+        "application/x-extension-xhtml"
+        "application/x-extension-xht"
+      ]
+      |> map (type: lib.nameValuePair type [ "firefox.desktop" ])
+      |> lib.listToAttrs;
+  };
 }

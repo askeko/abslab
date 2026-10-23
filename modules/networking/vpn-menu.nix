@@ -1,3 +1,4 @@
+{ config, ... }:
 {
   flake.modules.homeManager.gui =
     hmArgs@{ pkgs, lib, ... }:
@@ -78,7 +79,7 @@
         );
         watch = lib.mkDefault "${lib.getExe' pkgs.iproute2 "ip"} monitor link";
         colors = {
-          up = lib.mkDefault "green";
+          up = lib.mkDefault config.flake.meta.rosePine.foam;
           down = lib.mkDefault "outline";
         };
         actions.left = lib.mkDefault "exec ${lib.getExe vpn-menu}";

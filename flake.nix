@@ -57,6 +57,32 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
+
+    # Rosé Pine's own ports (github.com/rose-pine) that nixpkgs lacks.
+    rose-pine-btop = {
+      flake = false;
+      url = "github:rose-pine/btop";
+    };
+    rose-pine-firefox = {
+      flake = false;
+      url = "github:rose-pine/firefox";
+    };
+    rose-pine-eza = {
+      flake = false;
+      url = "github:rose-pine/eza";
+    };
+    rose-pine-gtk = {
+      flake = false;
+      url = "github:rose-pine/gtk";
+    };
+    rose-pine-tm-theme = {
+      flake = false;
+      url = "github:rose-pine/tm-theme";
+    };
+    rose-pine-yazi = {
+      flake = false;
+      url = "github:rose-pine/yazi";
+    };
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);

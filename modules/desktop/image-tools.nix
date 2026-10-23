@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 {
   flake.modules.homeManager.gui =
     { pkgs, ... }:
@@ -8,17 +8,14 @@
         gimp-with-plugins
         hyprpicker
         imagemagick
-        imv
         inkscape
         jpeginfo
       ];
 
-      # imv has no include, so Noctalia renders its whole config from
-      # imv-noctalia/config (background and overlay colours); other imv
-      # settings go in that file too, not in programs.imv.
-      programs.noctalia.settings.theme.templates.user.imv = {
-        input_path = lib.mkDefault "${./imv-noctalia/config}";
-        output_path = lib.mkDefault "$XDG_CONFIG_HOME/imv/config";
+      # Rosé Pine has no imv port: its base behind images.
+      programs.imv = {
+        enable = true;
+        settings.options.background = lib.mkDefault (lib.removePrefix "#" config.flake.meta.rosePine.base);
       };
 
       wayland.windowManager.hyprland.extraConfig = ''
