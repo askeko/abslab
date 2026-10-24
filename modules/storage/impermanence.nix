@@ -48,7 +48,10 @@
         '';
       };
 
-      # /home and /nix are separate persistent subvolumes, so they survive unlisted.
+      # /home and /nix are separate persistent subvolumes, so they survive
+      # unlisted. System state is listed here; a feature with its own state
+      # (Bluetooth, NetworkManager, libvirt, Docker, the greeter) adds it to
+      # this module from its own file.
       environment.persistence."/persist" = {
         hideMounts = true;
         directories = [
@@ -56,17 +59,6 @@
           "/var/lib/nixos"
           "/var/lib/systemd/coredump"
           "/var/lib/systemd/rfkill"
-          "/var/lib/bluetooth"
-          "/var/lib/NetworkManager"
-          "/etc/NetworkManager/system-connections"
-          "/var/lib/libvirt"
-          "/var/lib/docker"
-          {
-            directory = "/var/lib/noctalia-greeter";
-            user = "greeter";
-            group = "greeter";
-            mode = "0750";
-          }
           "/var/db/sudo"
         ];
         files = [ "/etc/machine-id" ];

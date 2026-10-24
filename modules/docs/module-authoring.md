@@ -6,7 +6,7 @@
 2. **Keep NixOS and Home Manager siblings together when related**
    - Co-locate system-level and user-level logic in the same file by populating both `flake.modules.nixos.*` and `flake.modules.homeManager.*` entries.
 3. **Derive host builds from module lists**
-   - Host definitions only list module keys; the loader handles expansion, Home Manager wiring, and installer-specific extras.
+   - A host is `configurations.nixos.<host>.module`, which imports module values from `config.flake.modules.nixos`; `modules/configurations/nixos.nix` builds it, and Home Manager is wired by NixOS modules.
 4. **Use metadata instead of literals**
    - Pull shared strings, secrets, and UI options from `config.flake.meta` so replacements propagate automatically.
 5. **Route dependencies through the tree**
@@ -14,7 +14,7 @@
 6. **Expose automation through perSystem**
    - Checks, formatters, dev shells, and packages should be defined under `perSystem` so every supported platform gets consistent tooling.
 7. **Prefer data over conditionals**
-   - Pass environment-specific values (host role, install mode, usernames) in `specialArgs` to keep modules declarative and easily testable.
+   - Read shared values (usernames, fonts, palettes) from `config.flake.meta` and inputs from the flake-parts module arguments, not `specialArgs`; a host's differences come from which modules it imports and what it overrides.
 8. **Keep comments minimal**
    - Only add comments that explain "why", not "what"; remove obvious restatements.
    - Avoid section headers unless the file is complex enough to warrant them; brief inline comments for non-obvious values are acceptable.
@@ -46,19 +46,18 @@ services.myapp.enable = true;
 **✅ Correct pattern:**
 ```nix
 # Module enables by default
-flake.modules.nixos."services/myapp" = {
-  config = {
-    services.myapp.enable = lib.mkDefault true;
-    services.myapp.port = lib.mkDefault 8080;
-    # ... all configuration with good defaults
-  };
+flake.modules.nixos.myapp = {
+  services.myapp.enable = lib.mkDefault true;
+  services.myapp.port = lib.mkDefault 8080;
+  # ... all configuration with good defaults
 };
 
 # Host just imports - no enable needed!
-imports = [ "services/myapp" ];
-
-# Only override if different from defaults
-services.myapp.port = 9000;
+configurations.nixos.my-server.module = {
+  imports = [ config.flake.modules.nixos.myapp ];
+  # Only override if different from defaults
+  services.myapp.port = 9000;
+};
 ```
 
 ### Namespace Guidelines
@@ -84,7 +83,7 @@ services.myapp.port = 9000;
 ```nix
 # modules/services/tinyproxy.nix
 _: {
-  flake.modules.nixos."services/tinyproxy" = { config, lib, ... }:
+  flake.modules.nixos.tinyproxy = { config, lib, ... }:
     let
       cfg = config.services.tinyproxy;
     in
@@ -131,16 +130,19 @@ _: {
 ```
 
 ```nix
-# modules/hosts/my-server.nix
+# modules/hosts/my-server/imports.nix
+{ config, ... }:
 {
-  imports = [
-    "services/tinyproxy"  # Enabled with defaults!
-    "services/plex"       # Enabled with defaults!
-  ];
+  configurations.nixos.my-server.module = {
+    imports = with config.flake.modules.nixos; [
+      tinyproxy # Enabled with defaults!
+      plex # Enabled with defaults!
+    ];
 
-  # Only override what's different from defaults
-  services.tinyproxy.port = 9999;
-  services.plex.nginx.port = 32402;
+    # Only override what's different from defaults
+    services.tinyproxy.port = 9999;
+    services.plex.nginx.port = 32402;
+  };
 }
 ```
 

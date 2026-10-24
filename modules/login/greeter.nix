@@ -3,40 +3,51 @@ let
   owner = config.flake.meta.owner.username;
 in
 {
-  # Noctalia Greeter on greetd, with absentia and the uwsm Hyprland session
-  # preselected, at boot too: no autologin, since the password is what unlocks
-  # the keyring. greetd's PAM includes `login`, so it asks for the password,
-  # then a YubiKey touch (security/yubikey.nix).
-  flake.modules.nixos.pc =
-    nixosArgs@{ pkgs, ... }:
-    {
-      services.displayManager.noctalia-greeter = {
-        enable = lib.mkDefault true;
-        # Noctalia's appearance-only sync to the greeter runs without a prompt.
-        passwordlessSyncUsers = [ owner ];
-        # The session's Rosé Pine cursor (style/cursor.nix); the sync doesn't
-        # carry the cursor.
-        cursorTheme = {
-          package = lib.mkDefault pkgs.rose-pine-cursor;
-          name = lib.mkDefault "BreezeX-RosePine-Linux";
-        };
-        settings = {
-          session.default = lib.mkDefault "Hyprland (uwsm-managed)";
-          user.default = lib.mkDefault owner;
-          # Same keymap as the session, so the password types the same.
-          keyboard = with nixosArgs.config.services.xserver.xkb; {
-            layout = lib.mkDefault layout;
-            options = lib.mkDefault options;
+  flake.modules = {
+    # Noctalia Greeter on greetd, with absentia and the uwsm Hyprland session
+    # preselected, at boot too: no autologin, since the password is what unlocks
+    # the keyring. greetd's PAM includes `login`, so it asks for the password,
+    # then a YubiKey touch (security/yubikey.nix).
+    nixos.pc =
+      nixosArgs@{ pkgs, ... }:
+      {
+        services.displayManager.noctalia-greeter = {
+          enable = lib.mkDefault true;
+          # Noctalia's appearance-only sync to the greeter runs without a prompt.
+          passwordlessSyncUsers = [ owner ];
+          # The session's Rosé Pine cursor (style/cursor.nix); the sync doesn't
+          # carry the cursor.
+          cursorTheme = {
+            package = lib.mkDefault pkgs.rose-pine-cursor;
+            name = lib.mkDefault "BreezeX-RosePine-Linux";
+          };
+          settings = {
+            session.default = lib.mkDefault "Hyprland (uwsm-managed)";
+            user.default = lib.mkDefault owner;
+            # Same keymap as the session, so the password types the same.
+            keyboard = with nixosArgs.config.services.xserver.xkb; {
+              layout = lib.mkDefault layout;
+              options = lib.mkDefault options;
+            };
           };
         };
+
+        # No avatar in the greeter. Plain priority: the greeter module enables it
+        # with mkDefault.
+        services.accounts-daemon.enable = false;
       };
 
-      # No avatar in the greeter. Plain priority: the greeter module enables it
-      # with mkDefault.
-      services.accounts-daemon.enable = false;
-    };
+    # The greeter's synced appearance survives the root wipe.
+    nixos.impermanence.environment.persistence."/persist".directories = [
+      {
+        directory = "/var/lib/noctalia-greeter";
+        user = "greeter";
+        group = "greeter";
+        mode = "0750";
+      }
+    ];
 
-  # Wallpaper, palette, light/dark, font and monitor layout follow Noctalia.
-  flake.modules.homeManager.gui.programs.noctalia.settings.shell.greeter_sync.auto_sync =
-    lib.mkDefault true;
+    # Wallpaper, palette, light/dark, font and monitor layout follow Noctalia.
+    homeManager.gui.programs.noctalia.settings.shell.greeter_sync.auto_sync = lib.mkDefault true;
+  };
 }

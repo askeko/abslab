@@ -13,4 +13,9 @@
       };
     };
   };
+
+  # Images, containers and volumes survive the root wipe.
+  flake.modules.nixos.impermanence.environment.persistence."/persist".directories = [
+    "/var/lib/docker"
+  ];
 }

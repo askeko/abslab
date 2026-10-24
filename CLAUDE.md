@@ -120,9 +120,11 @@ Editor tooling for a language lives in `programs.lazyvim.extraPackages` in
 
 ## Impermanence
 
-Both hosts wipe `/` on boot. A service that keeps state under `/var/lib` must have its
-directory added to the `environment.persistence."/persist"` list in
-`modules/storage/impermanence.nix` (e.g. `/var/lib/libvirt`, `/var/lib/docker`).
+Both hosts wipe `/` on boot. A feature that keeps state under `/var/lib` persists it from
+its own file, contributing to the `impermanence` NixOS module:
+`flake.modules.nixos.impermanence.environment.persistence."/persist".directories = [ "/var/lib/docker" ];`
+(as `virtualization/docker.nix`, `libvirt.nix`, `desktop/bluetooth.nix`, `networking/manager.nix`,
+`login/greeter.nix` do). `modules/storage/impermanence.nix` lists only system-wide state.
 
 ## Directory conventions
 

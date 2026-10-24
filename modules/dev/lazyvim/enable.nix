@@ -1,5 +1,8 @@
-{ inputs, ... }:
+{ config, inputs, ... }:
 {
+  # Part of every host's HM setup, and of the standalone HM checks.
+  flake.modules.homeManager.base.imports = [ config.flake.modules.homeManager.lazyvim ];
+
   flake.modules.homeManager.lazyvim = hmArgs: {
     imports = [ inputs.lazyvim.homeManagerModules.default ];
 
