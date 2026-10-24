@@ -35,6 +35,13 @@ in
         # No avatar in the greeter. Plain priority: the greeter module enables it
         # with mkDefault.
         services.accounts-daemon.enable = false;
+
+        # A clean handoff from the greeter to Hyprland, both on VT1: `uwsm start`
+        # logs to the journal instead of painting the VT (pam_env gives greetd's
+        # session this variable; 2 also drops warnings, errors still show), and
+        # the console cursor stays hidden in the gap between the two compositors.
+        environment.sessionVariables.UWSM_SILENT_START = lib.mkDefault "2";
+        boot.kernelParams = [ "vt.global_cursor_default=0" ];
       };
 
     # The greeter's synced appearance survives the root wipe.
