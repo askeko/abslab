@@ -6,6 +6,7 @@
       pc
       nvidia-gpu
       impermanence
+      gaming
     ];
   };
 }

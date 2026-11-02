@@ -1,5 +1,5 @@
 {
-  flake.modules.homeManager.gui = {
+  flake.modules.homeManager.gaming = {
     programs.mangohud.enable = true;
 
     # Text rather than programs.mangohud.settings: the HUD shows its items in

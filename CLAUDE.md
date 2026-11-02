@@ -41,6 +41,10 @@ Desktop shell: **Noctalia v5** (HM `programs.noctalia`, systemd user service) �
 - `base` NixOS module → loads `homeManager.base` and `homeManager.lazyvim` for all users
 - `pc` NixOS module → loads `homeManager.gui`
 - `laptop` NixOS module → loads `homeManager.laptop`
+- `gaming` NixOS module → loads `homeManager.gaming`
+
+Gaming (`media/gaming/`) is one `gaming` module that only lazarus imports;
+every gaming feature contributes to it.
 
 To add a new HM module to all desktop hosts, add it to `pc` in that file (or create a new NixOS module key and import it in host imports).
 

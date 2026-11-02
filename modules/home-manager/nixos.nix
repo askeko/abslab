@@ -39,5 +39,11 @@
         config.flake.modules.homeManager.laptop
       ];
     };
+
+    gaming = {
+      home-manager.users.${config.flake.meta.owner.username}.imports = [
+        config.flake.modules.homeManager.gaming
+      ];
+    };
   };
 }
